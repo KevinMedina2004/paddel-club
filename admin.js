@@ -43,11 +43,10 @@ async function cargarPanelAdmin() {
         }
 
         reservas.forEach(r => {
-            let badgeColor = '#f59e0b'; // Pendiente
+            let badgeColor = '#f59e0b';
             if (r.estado_pago === 'Aprobado') badgeColor = '#10b981';
             if (r.estado_pago === 'Rechazado') badgeColor = '#ef4444';
 
-            // CORRECCIÓN: Creamos un objeto URL temporal para abrir el PDF/Imagen Base64 correctamente en una pestaña nueva
             let comprobanteHtml = 'Sin comprobante';
             if (r.comprobante && r.comprobante.startsWith('data:')) {
                 comprobanteHtml = `<a href="#" onclick="abrirComprobanteBase64('${r.comprobante}'); return false;" class="btn-ver-comprobante">Ver Comprobante 🔍</a>`;
@@ -79,7 +78,6 @@ async function cargarPanelAdmin() {
     }
 }
 
-// Función auxiliar para convertir el Base64 y abrirlo limpiamente como documento en otra pestaña
 function abrirComprobanteBase64(base64Data) {
     try {
         const arr = base64Data.split(',');

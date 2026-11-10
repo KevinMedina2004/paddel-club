@@ -194,6 +194,52 @@ body {
     border-color: var(--primary-color);
 }
 
+/* TARJETA DE SEÑA DESTACADA */
+.datos-seña-panel {
+    background: #111827;
+    border: 1px solid var(--accent-color);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 10px;
+}
+
+.datos-seña-panel h4 {
+    margin: 0 0 12px 0;
+    color: var(--accent-color);
+    font-size: 15px;
+}
+
+.datos-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.datos-grid code {
+    background: #374151;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.aviso-adjunto {
+    display: block;
+    margin-top: 12px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.file-input-custom {
+    padding: 10px;
+    background: #111827;
+    border: 1px dashed var(--primary-color);
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
 /* PRECIO BOX */
 .precio-box {
     background: #111827;
@@ -226,6 +272,54 @@ body {
 .btn-primary:hover {
     background: var(--primary-dark);
     color: white;
+}
+
+/* CONSULTOR DE ESTADO */
+.consultor-grid {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.consultor-grid input {
+    flex: 1;
+    min-width: 250px;
+    background: #111827;
+    border: 1px solid #4b5563;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    outline: none;
+}
+
+.btn-consultar {
+    background: var(--accent-color);
+    color: #0b0f19;
+    border: none;
+    padding: 12px 20px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.resultado-consulta-box {
+    margin-top: 15px;
+    background: #111827;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.reserva-encontrada-item {
+    background: #1f2937;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 8px;
+    border-left: 3px solid var(--primary-color);
+    font-size: 13px;
+}
+
+.reserva-encontrada-item p {
+    margin: 4px 0;
 }
 
 /* GRILLA */
@@ -279,7 +373,7 @@ body {
 
 .error-text { color: var(--danger); font-size: 13px; text-align: center; margin-top: 10px; }
 
-/* TABLA STAFF */
+/* TABLA STAFF CON SCROLL INTERNO */
 .staff-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -297,12 +391,17 @@ body {
 
 .stat-box p { margin: 10px 0 0 0; font-size: 24px; font-weight: 700; color: var(--accent-color); }
 
+.table-scroll-container {
+    max-height: 450px;
+    overflow-y: auto;
+    border: 1px solid #374151;
+    border-radius: 8px;
+}
+
 .staff-table {
     width: 100%;
     border-collapse: collapse;
     background: #111827;
-    border-radius: 8px;
-    overflow: hidden;
 }
 
 .staff-table th, .staff-table td {
@@ -312,26 +411,12 @@ body {
     font-size: 13px;
 }
 
-.datos-alias-card {
-    background: #111827;
-    border: 1px dashed var(--accent-color);
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 5px;
-    font-size: 13px;
-}
-
-.datos-alias-card p {
-    margin: 4px 0;
-    color: var(--text-light);
-}
-
-.datos-alias-card code {
-    background: #374151;
-    color: var(--accent-color);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 700;
+.staff-table th { 
+    background: #374151; 
+    color: white; 
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .btn-ver-comprobante {
@@ -349,9 +434,6 @@ body {
 .btn-ver-comprobante:hover {
     background: #2563eb;
 }
-
-
-.staff-table th { background: #374151; color: white; }
 
 .btn-aprobar { background: var(--primary-color); color: #0b0f19; border: none; padding: 6px 10px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 11px; }
 .btn-rechazar { background: var(--accent-color); color: #0b0f19; border: none; padding: 6px 10px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 11px; }

@@ -11,22 +11,17 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// Límite amplio para recibir archivos en Base64
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// Inicializar base de datos recreando la tabla con 'comprobante TEXT'
 async function inicializarBaseDatos() {
   try {
-    // NOTA: Recreamos la tabla para limpiar cualquier límite viejo de character varying
-    await pool.query(`DROP TABLE IF EXISTS reservas CASCADE;`);
-    
     await pool.query(`
-      CREATE TABLE reservas (
+      CREATE TABLE IF NOT EXISTS reservas (
         id SERIAL PRIMARY KEY,
         cancha INT,
-        horario VARCHAR(20),
+        horario VARCHAR(50),
         dia VARCHAR(20),
         fecha VARCHAR(20),
         cliente VARCHAR(100),

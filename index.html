@@ -38,7 +38,7 @@
         </div>
         <div class="widget-card">
             <span>⛅ Clima San Justo</span>
-            <strong id="widgetClima">🌤️ 22°C (Soleado)</strong>
+            <strong id="widgetClima">🌤️ 22°C (Despejado)</strong>
         </div>
     </section>
 
@@ -52,6 +52,8 @@
 
     <!-- CONTENEDOR PRINCIPAL CLIENTES -->
     <main class="main-container">
+        
+        <!-- SECCIÓN DE RESERVAS -->
         <div class="panel-card">
             <h2>Reserva tu Cancha Online</h2>
             <p class="subtitle">Selecciona fecha, horario, cancha y adjunta el comprobante de tu seña de $15.000.</p>
@@ -96,16 +98,22 @@
                         </select>
                     </div>
 
-                    <!-- CAJA CON DATOS DE TRANSFERENCIA Y CARGA DE COMPROBANTE -->
-                    <div class="form-group form-full transfer-box-container">
-                        <label>Datos para la Seña ($15.000):</label>
-                        <div class="datos-alias-card">
-                            <p>🏦 <strong>Alias:</strong> <code>san.esteban.padel</code></p>
-                            <p>👤 <strong>Titular:</strong> San Esteban Paddle Club S.R.L.</p>
-                            <p>📊 <strong>CVU / CBU:</strong> 0000003100012345678990</p>
+                    <!-- TARJETA DE SEÑA MEJORADA Y DESTACADA -->
+                    <div class="form-group form-full">
+                        <div class="datos-seña-panel">
+                            <h4>💳 Datos para realizar la seña ($15.000)</h4>
+                            <div class="datos-grid">
+                                <p><strong>Alias:</strong> <code>san.esteban.padel</code></p>
+                                <p><strong>Titular:</strong> San Esteban Paddle Club S.R.L.</p>
+                                <p><strong>CVU / CBU:</strong> <code>0000003100012345678990</code></p>
+                            </div>
+                            <small class="aviso-adjunto">Adjunta el comprobante o captura de la transferencia para validar tu turno.</small>
                         </div>
-                        <label style="margin-top: 10px;">Subir o adjuntar Comprobante de Seña (Imagen o PDF):</label>
-                        <input type="file" id="inputComprobanteFile" accept="image/*,.pdf" required style="padding: 10px; background: #111827; border: 1px dashed var(--primary-color); border-radius: 8px; color: white; cursor: pointer;">
+                    </div>
+
+                    <div class="form-group form-full">
+                        <label>Subir Comprobante de Seña (Imagen o PDF):</label>
+                        <input type="file" id="inputComprobanteFile" accept="image/*,.pdf" required class="file-input-custom">
                     </div>
                 </div>
 
@@ -120,9 +128,21 @@
             </form>
         </div>
 
+        <!-- CONSULTOR DE ESTADO DE RESERVA PARA CLIENTES -->
+        <div class="panel-card mt-20 consultor-card">
+            <h2>🔍 Consultar Estado de mi Reserva</h2>
+            <p class="subtitle">Ingresa tu número de teléfono para verificar si tu seña fue aprobada o está pendiente.</p>
+            <div class="consultor-grid">
+                <input type="tel" id="inputBusquedaTel" placeholder="Ingresa tu teléfono (Ej: 1128071942)">
+                <button type="button" class="btn-consultar" onclick="consultarEstadoReserva()">Consultar Estado</button>
+            </div>
+            <div id="resultadoConsulta" class="resultado-consulta-box"></div>
+        </div>
+
         <!-- GRILLA DE ESTADO DE CANCHAS -->
         <div class="panel-card mt-20">
             <h3>Estado Actual de Canchas (San Esteban)</h3>
+            <p class="subtitle">Canchas ocupadas y libres para la fecha seleccionada.</p>
             <div id="grillaTurnos" class="grilla-turnos"></div>
         </div>
     </main>

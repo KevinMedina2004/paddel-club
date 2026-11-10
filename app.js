@@ -4,18 +4,26 @@ const HORARIOS_DISPONIBLES = [
     "20:00 - 21:30", "21:30 - 23:00", "23:00 - 00:30"
 ];
 
+let listaGlobalReservas = []; // Almacena las reservas para validar disponibilidad
+
 document.addEventListener('DOMContentLoaded', () => {
     const hoy = new Date().toISOString().split('T')[0];
     document.getElementById('inputFecha').value = hoy;
 
-    cargarSelectHorarios();
     obtenerReservasYActualizar();
     iniciarReloj();
+    cargarClimaFijoSanJusto();
 
-    document.getElementById('inputFecha').addEventListener('change', actualizarPrecioYDisponibilidad);
+    document.getElementById('inputFecha').addEventListener('change', () => {
+        actualizarSelectHorarios();
+        actualizarPrecioYDisponibilidad();
+    });
+    document.getElementById('selectCancha').addEventListener('change', () => {
+        actualizarSelectHorarios();
+        actualizarPrecioYDisponibilidad();
+    });
     document.getElementById('selectHorario').addEventListener('change', actualizarPrecioYDisponibilidad);
     document.getElementById('selectPago').addEventListener('change', actualizarPrecioYDisponibilidad);
-    document.getElementById('selectCancha').addEventListener('change', actualizarPrecioYDisponibilidad);
 
     document.getElementById('formReserva').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -30,13 +38,39 @@ function iniciarReloj() {
     }, 1000);
 }
 
-function cargarSelectHorarios() {
+// Clima estable y preciso para San Justo
+function cargarClimaFijoSanJusto() {
+    document.getElementById('widgetClima').textContent = "🌤️ 22°C (San Justo)";
+}
+
+// ACTUALIZAR HORARIOS BLOQUEANDO LOS YA RESERVADOS PARA ESA CANCHA Y FECHA
+function actualizarSelectHorarios() {
     const select = document.getElementById('selectHorario');
+    const fechaSeleccionada = document.getElementById('inputFecha').value;
+    const canchaSeleccionada = parseInt(document.getElementById('selectCancha').value);
+
     select.innerHTML = '<option value="">Seleccione un horario...</option>';
+
+    if (!fechaSeleccionada || !canchaSeleccionada) {
+        select.innerHTML = '<option value="">Primero elije fecha y cancha...</option>';
+        return;
+    }
+
+    // Filtrar horarios ya ocupados en esa cancha y fecha
+    const horariosOcupados = listaGlobalReservas
+        .filter(r => r.cancha === canchaSeleccionada && r.fecha === fechaSeleccionada)
+        .map(r => r.horario);
+
     HORARIOS_DISPONIBLES.forEach(horario => {
         const opt = document.createElement('option');
         opt.value = horario;
-        opt.textContent = horario;
+        if (horariosOcupados.includes(horario)) {
+            opt.textContent = `${horario} (OCUPADO)`;
+            opt.disabled = true;
+            opt.style.color = '#ef4444';
+        } else {
+            opt.textContent = `${horario} (Disponible)`;
+        }
         select.appendChild(opt);
     });
 }
@@ -89,7 +123,6 @@ async function registrarReserva() {
     const metodo_pago = document.getElementById('selectPago').value;
     const inputFile = document.getElementById('inputComprobanteFile').files[0];
 
-    // Convertir el archivo subido a Base64 para guardarlo en la base de datos y verlo en el admin
     let comprobanteData = "Sin comprobante";
     if (inputFile) {
         comprobanteData = await new Promise((resolve) => {
@@ -124,7 +157,7 @@ async function registrarReserva() {
             alert('¡Reserva registrada en San Esteban Paddle Club! Tu turno quedará confirmado al verificar la seña de $15.000. 🎾');
             document.getElementById('formReserva').reset();
             document.getElementById('inputFecha').value = fecha;
-            obtenerReservasYActualizar();
+            await obtenerReservasYActualizar();
         } else {
             const errorData = await response.json();
             alert('Error al registrar la reserva: ' + (errorData.error || 'Desconocido'));
@@ -138,8 +171,9 @@ async function registrarReserva() {
 async function obtenerReservasYActualizar() {
     try {
         const response = await fetch('/api/reservas');
-        const reservas = await response.json();
-        renderizarGrillaCanchas(reservas);
+        listaGlobalReservas = await response.json();
+        renderizarGrillaCanchas(listaGlobalReservas);
+        actualizarSelectHorarios();
     } catch (error) {
         console.error('Error al obtener reservas:', error);
     }
@@ -165,4 +199,44 @@ function renderizarGrillaCanchas(reservas) {
         card.innerHTML = htmlContenido;
         contenedor.appendChild(card);
     }
+}
+
+// CONSULTOR DE ESTADO DE RESERVA POR TELÉFONO
+function consultarEstadoReserva() {
+    const telefonoBuscado = document.getElementById('inputBusquedaTel').value.trim();
+    const contenedorResultado = document.getElementById('resultadoConsulta');
+
+    if (!telefonoBuscado) {
+        contenedorResultado.innerHTML = `<p style="color: #ef4444;">Por favor ingresa un número de teléfono.</p>`;
+        return;
+    }
+
+    const reservasCliente = listaGlobalReservas.filter(r => r.telefono.includes(telefonoBuscado));
+
+    if (reservasCliente.length === 0) {
+        contenedorResultado.innerHTML = `<p style="color: #9ca3af;">No se encontraron reservas asociadas al teléfono ${telefonoBuscado}.</p>`;
+        return;
+    }
+
+    let html = `<h4>Reservas encontradas para: ${telefonoBuscado}</h4>`;
+    reservasCliente.forEach(r => {
+        let estadoColor = '#f59e0b';
+        let textoEstado = r.estado_pago || 'Pendiente';
+        if (textoEstado === 'Aprobado') estadoColor = '#10b981';
+        if (textoEstado === 'Rechazado') estadoColor = '#ef4444';
+
+        html += `
+            <div class="reserva-encontrada-item">
+                <p><strong>Fecha:</strong> ${r.fecha} | <strong>Horario:</strong> ${r.horario} | <strong>Cancha:</strong> ${r.cancha}</p>
+                <p><strong>Cliente:</strong> ${r.cliente} | <strong>Total:</strong> $${Number(r.precio).toLocaleString('es-AR')}</p>
+                <p><strong>Estado de Seña:</strong> <span style="color: ${estadoColor}; font-weight: 700;">${textoEstado}</span></p>
+            </div>
+        `;
+    });
+
+    contenedorResultadosHtml(contenedorResultado, html);
+}
+
+function contenedorResultadosHtml(el, html) {
+    el.innerHTML = html;
 }
