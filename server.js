@@ -11,16 +11,19 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// Aumentamos el límite de JSON y URLencoded a 50mb para soportar imágenes y PDFs en Base64
+// Límite amplio para recibir archivos en Base64
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// Inicializar base de datos recreando la tabla de forma limpia para evitar conflictos
+// Inicializar base de datos recreando la tabla con 'comprobante TEXT'
 async function inicializarBaseDatos() {
   try {
+    // NOTA: Recreamos la tabla para limpiar cualquier límite viejo de character varying
+    await pool.query(`DROP TABLE IF EXISTS reservas CASCADE;`);
+    
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS reservas (
+      CREATE TABLE reservas (
         id SERIAL PRIMARY KEY,
         cancha INT,
         horario VARCHAR(20),
@@ -36,7 +39,7 @@ async function inicializarBaseDatos() {
         estado VARCHAR(20) DEFAULT 'Reservado'
       );
     `);
-    console.log("Base de datos de San Esteban Paddle Club lista.");
+    console.log("Base de datos de San Esteban Paddle Club lista y optimizada.");
   } catch (err) {
     console.error("Error al inicializar la base de datos:", err);
   }
