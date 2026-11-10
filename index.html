@@ -3,16 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paddel Club</title>
+    <title>Master Padel Club 🎾 - Gestión de Canchas</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts para un estilo deportivo moderno -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h1>Paddel Club 🎾</h1>
-        <p>Sistema de gestión y reservas</p>
-        <button id="btnCargar">Probar Conexión con el Servidor</button>
-        <div id="resultado"></div>
-    </div>
+    <!-- HEADER / NAVEGACIÓN -->
+    <header class="club-header">
+        <div class="logo-area">
+            <h1>🎾 MASTER PADEL CLUB</h1>
+            <p>¡Viví la pasión del 20×10 al máximo nivel!</p>
+        </div>
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="cambiarVista('clientes')">👥 Panel Clientes (Reservas)</button>
+            <button class="tab-btn staff-tab" onclick="cambiarVista('staff')">🔒 Panel Staff</button>
+        </div>
+    </header>
+
+    <!-- INFO / HORARIOS DEL CLUB -->
+    <section class="info-bar">
+        <div class="info-item">🕒 <strong>Horarios del Club:</strong> Lunes a Domingo de 08:00 a 00:00 hs</div>
+        <div class="info-item">⚡ <strong>Turnos de:</strong> 1 hora y media (1:30 hs)</div>
+        <div class="info-item">💰 <strong>Tarifas:</strong> Base $24.000 | Desde 17:00 hs o Fines de Semana $34.000 <span class="cash-promo">(Efectivo: $31.000)</span></div>
+    </section>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="main-container">
+
+        <!-- ================= PANEL CLIENTES ================= -->
+        <div id="vista-clientes" class="vista-section active">
+            <div class="panel-card">
+                <h2>Reserva tu Cancha Online</h2>
+                <p class="subtitle">Selecciona la fecha, horario y una de nuestras 6 canchas profesionales de blindex.</p>
+                
+                <form id="formReserva" class="reserva-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Fecha de la Reserva:</label>
+                            <input type="date" id="inputFecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cancha Disponible (1 a 6):</label>
+                            <select id="selectCancha" required>
+                                <option value="">Seleccione una cancha...</option>
+                                <option value="1">Cancha 1 (Blindex - Panorámica)</option>
+                                <option value="2">Cancha 2 (Blindex - Central)</option>
+                                <option value="3">Cancha 3 (Blindex - Techada)</option>
+                                <option value="4">Cancha 4 (Blindex - Profesional)</option>
+                                <option value="5">Cancha 5 (Blindex - Outdoor)</option>
+                                <option value="6">Cancha 6 (Blindex - Master)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Horario (Turnos 1:30 hs):</label>
+                            <select id="selectHorario" required>
+                                <option value="">Primero elije fecha y cancha...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre y Apellido:</label>
+                            <input type="text" id="inputCliente" placeholder="Ej: Lionel Messi" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono / WhatsApp:</label>
+                            <input type="tel" id="inputTelefono" placeholder="Ej: 1122334455" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Método de Pago:</label>
+                            <select id="selectPago" required>
+                                <option value="Efectivo">Efectivo (¡Precio Promocional! $31.000)</option>
+                                <option value="Transferencia">Transferencia / Mercado Pago (Tarifa normal)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- CAJA DE PRECIO CALCULADO -->
+                    <div class="precio-box" id="cajaPrecio">
+                        <span>Total a Abonar:</span>
+                        <h3 id="txtPrecio">$0</h3>
+                        <small id="txtDetallePrecio">Selecciona horario y método de pago</small>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Confirmar Reserva 🎾</button>
+                </form>
+            </div>
+
+            <!-- GRILLA DE ESTADO DE CANCHAS -->
+            <div class="panel-card mt-20">
+                <h3>Estado Actual de Canchas y Turnos</h3>
+                <div id="grillaTurnos" class="grilla-turnos">
+                    <!-- Se carga dinámicamente con JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PANEL STAFF ================= -->
+        <div id="vista-staff" class="vista-section">
+            <div class="panel-card staff-card">
+                <h2>Panel de Control - Staff & Caja</h2>
+                <p class="subtitle">Administración general de turnos agendados, control de caja y cancelaciones.</p>
+                
+                <div class="staff-stats">
+                    <div class="stat-box">
+                        <h4>Total Reservas</h4>
+                        <p id="statTotal">0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Recaudación Estimada</h4>
+                        <p id="statCaja">$0</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="staff-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Cancha</th>
+                                <th>Horario</th>
+                                <th>Cliente</th>
+                                <th>Teléfono</th>
+                                <th>Pago</th>
+                                <th>Precio</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaStaffBody">
+                            <tr>
+                                <td colspan="9" style="text-align: center;">Cargando turnos...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
 
     <script src="app.js"></script>
 </body>
