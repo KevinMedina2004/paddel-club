@@ -4,7 +4,7 @@ const HORARIOS_DISPONIBLES = [
     "20:00 - 21:30", "21:30 - 23:00", "23:00 - 00:30"
 ];
 
-let listaGlobalReservas = []; // Almacena las reservas para validar disponibilidad
+let listaGlobalReservas = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     const hoy = new Date().toISOString().split('T')[0];
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     obtenerReservasYActualizar();
     iniciarReloj();
-    cargarClimaFijoSanJusto();
+    cargarClimaOpenMeteo();
 
     document.getElementById('inputFecha').addEventListener('change', () => {
         actualizarSelectHorarios();
@@ -38,12 +38,33 @@ function iniciarReloj() {
     }, 1000);
 }
 
-// Clima estable y preciso para San Justo
-function cargarClimaFijoSanJusto() {
-    document.getElementById('widgetClima').textContent = "🌤️ 22°C (San Justo)";
+// CLIMA PRECISO USANDO OPEN-METEO (SAN JUSTO / BUENOS AIRES)
+async function cargarClimaOpenMeteo() {
+    const elClima = document.getElementById('clima-admin');
+    if (!elClima) return;
+    try {
+        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-34.6037&longitude=-58.3816&current_weather=true');
+        const data = await res.json();
+        if (data.current_weather) {
+            elClima.innerText = `${Math.round(data.current_weather.temperature)}°C`;
+        }
+    } catch(e) {
+        elClima.innerText = '22°C';
+    }
 }
 
-// ACTUALIZAR HORARIOS BLOQUEANDO LOS YA RESERVADOS PARA ESA CANCHA Y FECHA
+// VENTANA MODAL PERSONALIZADA EN VEZ DE ALERT()
+function mostrarModal(titulo, mensaje) {
+    document.getElementById('modalTitle').textContent = titulo;
+    document.getElementById('modalMessage').textContent = mensaje;
+    document.getElementById('customModal').style.display = 'flex';
+}
+
+function cerrarModalCustom() {
+    document.getElementById('customModal').style.display = 'none';
+}
+
+// ACTUALIZAR HORARIOS (SOLO TOMA LOS TURNOS ACTIVOS Y NO LOS RECHAZADOS)
 function actualizarSelectHorarios() {
     const select = document.getElementById('selectHorario');
     const fechaSeleccionada = document.getElementById('inputFecha').value;
@@ -56,9 +77,9 @@ function actualizarSelectHorarios() {
         return;
     }
 
-    // Filtrar horarios ya ocupados en esa cancha y fecha
+    // Excluimos las reservas rechazadas para que esos horarios vuelvan a estar libres
     const horariosOcupados = listaGlobalReservas
-        .filter(r => r.cancha === canchaSeleccionada && r.fecha === fechaSeleccionada)
+        .filter(r => r.cancha === canchaSeleccionada && r.fecha === fechaSeleccionada && r.estado_pago !== 'Rechazado')
         .map(r => r.horario);
 
     HORARIOS_DISPONIBLES.forEach(horario => {
@@ -154,17 +175,17 @@ async function registrarReserva() {
         });
 
         if (response.ok) {
-            alert('¡Reserva registrada en San Esteban Paddle Club! Tu turno quedará confirmado al verificar la seña de $15.000. 🎾');
+            mostrarModal('¡Reserva Exitosa!', 'Tu turno en San Esteban Paddle Club quedó registrado. Quedará confirmado en cuanto staff verifique tu seña de $15.000.');
             document.getElementById('formReserva').reset();
             document.getElementById('inputFecha').value = fecha;
             await obtenerReservasYActualizar();
         } else {
             const errorData = await response.json();
-            alert('Error al registrar la reserva: ' + (errorData.error || 'Desconocido'));
+            mostrarModal('Error', 'No se pudo registrar la reserva: ' + (errorData.error || 'Desconocido'));
         }
     } catch (error) {
         console.error('Error de red:', error);
-        alert('No se pudo conectar con el servidor.');
+        mostrarModal('Error de Conexión', 'No se pudo conectar con el servidor.');
     }
 }
 
@@ -187,7 +208,8 @@ function renderizarGrillaCanchas(reservas) {
     for (let c = 1; c <= 6; c++) {
         const card = document.createElement('div');
         card.className = 'turno-card';
-        const reservasCancha = reservas.filter(r => r.cancha === c && r.fecha === fechaSeleccionada);
+        // Solo contamos como ocupadas aquellas reservas que NO estén rechazadas
+        const reservasCancha = reservas.filter(r => r.cancha === c && r.fecha === fechaSeleccionada && r.estado_pago !== 'Rechazado');
         
         let htmlContenido = `<h4>Cancha ${c}</h4>`;
         if (reservasCancha.length === 0) {
@@ -234,9 +256,5 @@ function consultarEstadoReserva() {
         `;
     });
 
-    contenedorResultadosHtml(contenedorResultado, html);
-}
-
-function contenedorResultadosHtml(el, html) {
-    el.innerHTML = html;
+    contenedorResultado.innerHTML = html;
 }

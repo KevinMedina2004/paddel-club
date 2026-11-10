@@ -14,6 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function mostrarModal(titulo, mensaje) {
+    document.getElementById('modalTitle').textContent = titulo;
+    document.getElementById('modalMessage').textContent = mensaje;
+    document.getElementById('customModal').style.display = 'flex';
+}
+
+function cerrarModalCustom() {
+    document.getElementById('customModal').style.display = 'none';
+}
+
 async function cargarPanelAdmin() {
     try {
         const response = await fetch('/api/reservas');
@@ -22,15 +32,19 @@ async function cargarPanelAdmin() {
         const tbody = document.getElementById('tablaStaffBody');
         tbody.innerHTML = '';
 
-        document.getElementById('statTotal').textContent = reservas.length;
+        // Solo contamos reservas activas (no rechazadas) para las estadísticas
+        const reservasActivas = reservas.filter(r => r.estado_pago !== 'Rechazado');
+        document.getElementById('statTotal').textContent = reservasActivas.length;
         
         let recaudacionTotal = 0;
         let senasTotales = 0;
 
         reservas.forEach(r => {
-            recaudacionTotal += parseFloat(r.precio || 0);
-            if (r.estado_pago === 'Aprobado') {
-                senasTotales += 15000;
+            if (r.estado_pago !== 'Rechazado') {
+                recaudacionTotal += parseFloat(r.precio || 0);
+                if (r.estado_pago === 'Aprobado') {
+                    senasTotales += 15000;
+                }
             }
         });
 
@@ -65,7 +79,7 @@ async function cargarPanelAdmin() {
                 <td><span style="color: ${badgeColor}; font-weight:700;">${r.estado_pago || 'Pendiente'}</span></td>
                 <td>
                     <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-                        <button class="btn-aprobar" onclick="cambiarEstadoPago(${r.id}, 'Aprobado')">Aprobar Seña</button>
+                        <button class="btn-aprobar" onclick="cambiarEstadoPago(${r.id}, 'Aprobado')">Aprobar</button>
                         <button class="btn-rechazar" onclick="cambiarEstadoPago(${r.id}, 'Rechazado')">Rechazar</button>
                         <button class="btn-delete" onclick="eliminarReserva(${r.id})">Borrar</button>
                     </div>
@@ -94,7 +108,7 @@ function abrirComprobanteBase64(base64Data) {
         window.open(blobUrl, '_blank');
     } catch (e) {
         console.error("Error al abrir comprobante:", e);
-        alert("No se pudo previsualizar el archivo adjunto.");
+        mostrarModal('Error', 'No se pudo previsualizar el archivo adjunto.');
     }
 }
 
@@ -106,9 +120,10 @@ async function cambiarEstadoPago(id, nuevoEstado) {
             body: JSON.stringify({ estado_pago: nuevoEstado })
         });
         if (response.ok) {
+            mostrarModal('Actualizado', `La reserva #${id} fue marcada como ${nuevoEstado}.`);
             cargarPanelAdmin();
         } else {
-            alert('Error al actualizar estado.');
+            mostrarModal('Error', 'No se pudo actualizar el estado.');
         }
     } catch (error) {
         console.error('Error:', error);
@@ -116,14 +131,14 @@ async function cambiarEstadoPago(id, nuevoEstado) {
 }
 
 async function eliminarReserva(id) {
-    if (!confirm('¿Estás seguro de eliminar esta reserva?')) return;
+    if (!confirm('¿Estás seguro de eliminar esta reserva permanentemente?')) return;
 
     try {
         const response = await fetch(`/api/reservas/${id}`, { method: 'DELETE' });
         if (response.ok) {
             cargarPanelAdmin();
         } else {
-            alert('Error al eliminar.');
+            mostrarModal('Error', 'No se pudo eliminar.');
         }
     } catch (error) {
         console.error('Error:', error);

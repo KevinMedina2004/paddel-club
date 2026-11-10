@@ -38,7 +38,7 @@
         </div>
         <div class="widget-card">
             <span>⛅ Clima San Justo</span>
-            <strong id="widgetClima">🌤️ 22°C (Despejado)</strong>
+            <strong id="widgetClima">Bs. As. <span id="clima-admin" style="color:var(--accent-color);">--°C</span></strong>
         </div>
     </section>
 
@@ -98,7 +98,7 @@
                         </select>
                     </div>
 
-                    <!-- TARJETA DE SEÑA MEJORADA Y DESTACADA -->
+                    <!-- TARJETA DE SEÑA DESTACADA -->
                     <div class="form-group form-full">
                         <div class="datos-seña-panel">
                             <h4>💳 Datos para realizar la seña ($15.000)</h4>
@@ -131,7 +131,7 @@
         <!-- CONSULTOR DE ESTADO DE RESERVA PARA CLIENTES -->
         <div class="panel-card mt-20 consultor-card">
             <h2>🔍 Consultar Estado de mi Reserva</h2>
-            <p class="subtitle">Ingresa tu número de teléfono para verificar si tu seña fue aprobada o está pendiente.</p>
+            <p class="subtitle">Ingresa tu número de teléfono para verificar si tu seña fue aprobada, rechazada o está pendiente.</p>
             <div class="consultor-grid">
                 <input type="tel" id="inputBusquedaTel" placeholder="Ingresa tu teléfono (Ej: 1128071942)">
                 <button type="button" class="btn-consultar" onclick="consultarEstadoReserva()">Consultar Estado</button>
@@ -146,6 +146,15 @@
             <div id="grillaTurnos" class="grilla-turnos"></div>
         </div>
     </main>
+
+    <!-- VENTANA MODAL PERSONALIZADA (CSS) -->
+    <div id="customModal" class="custom-modal-overlay" style="display: none;">
+        <div class="custom-modal-card">
+            <h3 id="modalTitle">Aviso del Club</h3>
+            <p id="modalMessage">Mensaje aquí...</p>
+            <button type="button" class="btn-primary" onclick="cerrarModalCustom()">Aceptar</button>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
