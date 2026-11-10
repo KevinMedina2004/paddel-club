@@ -46,7 +46,7 @@
     <section class="info-bar">
         <div class="info-item">🕒 <strong>Horarios:</strong> Lunes a Domingo de 08:00 a 00:00 hs</div>
         <div class="info-item">⚡ <strong>Turnos:</strong> 1 hora y media (1:30 hs) | <strong>6 Canchas</strong></div>
-        <div class="info-item">💰 <strong>Tarifas:</strong> Base $24.000 | Finde/Pico $34.000 <span class="cash-promo">(Efectivo: $31.000)</span></div>
+        <div class="info-item">💰 <strong>Tarifas:</strong> Base $24.000 | Finde/Pico $34.000 <span class="cash-promo">(Efectivo con descuento)</span></div>
         <div class="item-seña-aviso">⚠️ Seña obligatoria: <strong>$15.000</strong></div>
     </section>
 
@@ -62,6 +62,7 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Fecha de la Reserva:</label>
+                        <!-- Bloqueamos fechas anteriores con min="hoy" -->
                         <input type="date" id="inputFecha" required>
                     </div>
                     <div class="form-group">
@@ -93,7 +94,7 @@
                     <div class="form-group">
                         <label>Método de Pago:</label>
                         <select id="selectPago" required>
-                            <option value="Efectivo">Efectivo ($31.000 total)</option>
+                            <option value="Efectivo">Efectivo (con descuento)</option>
                             <option value="Transferencia">Transferencia / Mercado Pago</option>
                         </select>
                     </div>
@@ -115,13 +116,15 @@
                         <label>Subir Comprobante de Seña (Imagen o PDF):</label>
                         <input type="file" id="inputComprobanteFile" accept="image/*,.pdf" required class="file-input-custom">
                     </div>
-                </div>
 
-                <!-- CAJA DE PRECIO CALCULADO -->
-                <div class="precio-box" id="cajaPrecio">
-                    <span>Total a Abonar:</span>
-                    <h3 id="txtPrecio">$0</h3>
-                    <small id="txtDetallePrecio">Seña requerida: $15.000 (Saldo restante se paga en el club)</small>
+                    <!-- PRECIO CALCULADO UBICADO DEBAJO DE LA TRANSFERENCIA Y DATOS -->
+                    <div class="form-group form-full">
+                        <div class="precio-box" id="cajaPrecio">
+                            <span>Total a Abonar:</span>
+                            <h3 id="txtPrecio">$0</h3>
+                            <small id="txtDetallePrecio">Seña requerida: $15.000 (Saldo restante se paga en el club)</small>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-primary">Confirmar Reserva y Enviar Seña 🎾</button>

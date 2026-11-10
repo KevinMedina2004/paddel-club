@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (usuario === 'admin' && pass === 'sanesteban2026') {
             document.getElementById('loginModal').style.display = 'none';
             document.getElementById('panelAdminContent').style.display = 'block';
+            
+            // Modal de bienvenida personalizado al ingresar al sistema de staff
+            mostrarModal('¡Bienvenido al Staff!', 'Has ingresado correctamente al panel de control de San Esteban Paddle Club.');
+            
             cargarPanelAdmin();
         } else {
             document.getElementById('errorLogin').textContent = 'Usuario o contraseña incorrectos.';
@@ -32,7 +36,6 @@ async function cargarPanelAdmin() {
         const tbody = document.getElementById('tablaStaffBody');
         tbody.innerHTML = '';
 
-        // Solo contamos reservas activas (no rechazadas) para las estadísticas
         const reservasActivas = reservas.filter(r => r.estado_pago !== 'Rechazado');
         document.getElementById('statTotal').textContent = reservasActivas.length;
         

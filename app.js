@@ -8,13 +8,15 @@ let listaGlobalReservas = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     const hoy = new Date().toISOString().split('T')[0];
-    document.getElementById('inputFecha').value = hoy;
+    const inputFecha = document.getElementById('inputFecha');
+    inputFecha.value = hoy;
+    inputFecha.min = hoy; // Evita totalmente elegir fechas anteriores
 
     obtenerReservasYActualizar();
     iniciarReloj();
     cargarClimaOpenMeteo();
 
-    document.getElementById('inputFecha').addEventListener('change', () => {
+    inputFecha.addEventListener('change', () => {
         actualizarSelectHorarios();
         actualizarPrecioYDisponibilidad();
     });
@@ -38,7 +40,6 @@ function iniciarReloj() {
     }, 1000);
 }
 
-// CLIMA PRECISO USANDO OPEN-METEO (SAN JUSTO / BUENOS AIRES)
 async function cargarClimaOpenMeteo() {
     const elClima = document.getElementById('clima-admin');
     if (!elClima) return;
@@ -53,7 +54,6 @@ async function cargarClimaOpenMeteo() {
     }
 }
 
-// VENTANA MODAL PERSONALIZADA EN VEZ DE ALERT()
 function mostrarModal(titulo, mensaje) {
     document.getElementById('modalTitle').textContent = titulo;
     document.getElementById('modalMessage').textContent = mensaje;
@@ -64,7 +64,6 @@ function cerrarModalCustom() {
     document.getElementById('customModal').style.display = 'none';
 }
 
-// ACTUALIZAR HORARIOS (SOLO TOMA LOS TURNOS ACTIVOS Y NO LOS RECHAZADOS)
 function actualizarSelectHorarios() {
     const select = document.getElementById('selectHorario');
     const fechaSeleccionada = document.getElementById('inputFecha').value;
@@ -77,7 +76,6 @@ function actualizarSelectHorarios() {
         return;
     }
 
-    // Excluimos las reservas rechazadas para que esos horarios vuelvan a estar libres
     const horariosOcupados = listaGlobalReservas
         .filter(r => r.cancha === canchaSeleccionada && r.fecha === fechaSeleccionada && r.estado_pago !== 'Rechazado')
         .map(r => r.horario);
@@ -117,9 +115,9 @@ function calcularPrecio(fechaStr, horarioStr, metodoPago) {
 
     if (metodoPago === 'Efectivo' && precioBase === 34000) {
         precioBase = 31000;
-        detalle += " + Promo Efectivo ($31.000)";
+        detalle += " + Promo Efectivo con descuento";
     } else if (metodoPago === 'Efectivo') {
-        detalle += " (Efectivo)";
+        detalle += " (Efectivo con descuento)";
     }
 
     return { precio: precioBase, detalle: `${detalle} | Seña obligatoria: $15.000` };
@@ -177,7 +175,8 @@ async function registrarReserva() {
         if (response.ok) {
             mostrarModal('¡Reserva Exitosa!', 'Tu turno en San Esteban Paddle Club quedó registrado. Quedará confirmado en cuanto staff verifique tu seña de $15.000.');
             document.getElementById('formReserva').reset();
-            document.getElementById('inputFecha').value = fecha;
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('inputFecha').value = hoy;
             await obtenerReservasYActualizar();
         } else {
             const errorData = await response.json();
@@ -208,7 +207,6 @@ function renderizarGrillaCanchas(reservas) {
     for (let c = 1; c <= 6; c++) {
         const card = document.createElement('div');
         card.className = 'turno-card';
-        // Solo contamos como ocupadas aquellas reservas que NO estén rechazadas
         const reservasCancha = reservas.filter(r => r.cancha === c && r.fecha === fechaSeleccionada && r.estado_pago !== 'Rechazado');
         
         let htmlContenido = `<h4>Cancha ${c}</h4>`;
@@ -223,7 +221,7 @@ function renderizarGrillaCanchas(reservas) {
     }
 }
 
-// CONSULTOR DE ESTADO DE RESERVA POR TELÉFONO
+// CONSULTOR DE ESTADO DE RESERVA POR TELÉFONO CON COLORES DINÁMICOS EN EL BORDE
 function consultarEstadoReserva() {
     const telefonoBuscado = document.getElementById('inputBusquedaTel').value.trim();
     const contenedorResultado = document.getElementById('resultadoConsulta');
@@ -242,13 +240,14 @@ function consultarEstadoReserva() {
 
     let html = `<h4>Reservas encontradas para: ${telefonoBuscado}</h4>`;
     reservasCliente.forEach(r => {
-        let estadoColor = '#f59e0b';
+        let estadoColor = '#f59e0b'; // Amarillo por defecto (Pendiente)
         let textoEstado = r.estado_pago || 'Pendiente';
-        if (textoEstado === 'Aprobado') estadoColor = '#10b981';
-        if (textoEstado === 'Rechazado') estadoColor = '#ef4444';
+        
+        if (textoEstado === 'Aprobado') estadoColor = '#10b981'; // Verde
+        else if (textoEstado === 'Rechazado') estadoColor = '#ef4444'; // Rojo
 
         html += `
-            <div class="reserva-encontrada-item">
+            <div class="reserva-encontrada-item" style="border-left: 4px solid ${estadoColor};">
                 <p><strong>Fecha:</strong> ${r.fecha} | <strong>Horario:</strong> ${r.horario} | <strong>Cancha:</strong> ${r.cancha}</p>
                 <p><strong>Cliente:</strong> ${r.cliente} | <strong>Total:</strong> $${Number(r.precio).toLocaleString('es-AR')}</p>
                 <p><strong>Estado de Seña:</strong> <span style="color: ${estadoColor}; font-weight: 700;">${textoEstado}</span></p>

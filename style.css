@@ -247,7 +247,7 @@ body {
     border-radius: 10px;
     padding: 20px;
     text-align: center;
-    margin: 25px 0;
+    margin: 10px 0;
 }
 
 .precio-box h3 {
@@ -311,10 +311,9 @@ body {
 
 .reserva-encontrada-item {
     background: #1f2937;
-    padding: 10px;
+    padding: 12px;
     border-radius: 6px;
     margin-top: 8px;
-    border-left: 3px solid var(--primary-color);
     font-size: 13px;
 }
 
