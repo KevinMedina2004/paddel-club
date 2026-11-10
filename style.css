@@ -312,6 +312,45 @@ body {
     font-size: 13px;
 }
 
+.datos-alias-card {
+    background: #111827;
+    border: 1px dashed var(--accent-color);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 5px;
+    font-size: 13px;
+}
+
+.datos-alias-card p {
+    margin: 4px 0;
+    color: var(--text-light);
+}
+
+.datos-alias-card code {
+    background: #374151;
+    color: var(--accent-color);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.btn-ver-comprobante {
+    background: #3b82f6;
+    color: white;
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-block;
+    transition: background 0.3s;
+}
+
+.btn-ver-comprobante:hover {
+    background: #2563eb;
+}
+
+
 .staff-table th { background: #374151; color: white; }
 
 .btn-aprobar { background: var(--primary-color); color: #0b0f19; border: none; padding: 6px 10px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 11px; }

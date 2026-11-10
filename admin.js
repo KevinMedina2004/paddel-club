@@ -1,11 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Autenticación simple del admin
     document.getElementById('formLogin').addEventListener('submit', (e) => {
         e.preventDefault();
         const usuario = document.getElementById('userAdmin').value;
         const pass = document.getElementById('passAdmin').value;
 
-        // Usuario: admin / Contraseña: sanesteban2026
         if (usuario === 'admin' && pass === 'sanesteban2026') {
             document.getElementById('loginModal').style.display = 'none';
             document.getElementById('panelAdminContent').style.display = 'block';
@@ -49,6 +47,14 @@ async function cargarPanelAdmin() {
             if (r.estado_pago === 'Aprobado') badgeColor = '#10b981';
             if (r.estado_pago === 'Rechazado') badgeColor = '#ef4444';
 
+            // Botón o enlace para ver el comprobante en nueva pestaña
+            let comprobanteHtml = 'Sin comprobante';
+            if (r.comprobante && r.comprobante.startsWith('data:')) {
+                comprobanteHtml = `<a href="${r.comprobante}" target="_blank" class="btn-ver-comprobante">Ver Comprobante 🔍</a>`;
+            } else if (r.comprobante) {
+                comprobanteHtml = `<span>${r.comprobante}</span>`;
+            }
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>#${r.id}</td>
@@ -56,7 +62,7 @@ async function cargarPanelAdmin() {
                 <td>Cancha ${r.cancha}</td>
                 <td><strong>${r.cliente}</strong><br><small>${r.telefono}</small></td>
                 <td>${r.metodo_pago}<br><strong style="color:var(--accent-color);">$${Number(r.precio).toLocaleString('es-AR')}</strong></td>
-                <td><code style="background:#111; padding:4px; border-radius:4px; color:#fff;">${r.comprobante}</code></td>
+                <td>${comprobanteHtml}</td>
                 <td><span style="color: ${badgeColor}; font-weight:700;">${r.estado_pago || 'Pendiente'}</span></td>
                 <td>
                     <div style="display: flex; gap: 5px; flex-wrap: wrap;">

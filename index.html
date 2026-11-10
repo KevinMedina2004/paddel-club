@@ -22,7 +22,7 @@
         </div>
     </header>
 
-    <!-- WIDGETS INFORMATIVOS (Ubicación, Contacto, Hora y Clima) -->
+    <!-- WIDGETS INFORMATIVOS -->
     <section class="widgets-bar">
         <div class="widget-card">
             <span>📍 Ubicación</span>
@@ -38,16 +38,16 @@
         </div>
         <div class="widget-card">
             <span>⛅ Clima San Justo</span>
-            <strong id="widgetClima">Cargando clima...</strong>
+            <strong id="widgetClima">🌤️ 22°C (Soleado)</strong>
         </div>
     </section>
 
     <!-- INFO / HORARIOS DEL CLUB -->
     <section class="info-bar">
         <div class="info-item">🕒 <strong>Horarios:</strong> Lunes a Domingo de 08:00 a 00:00 hs</div>
-        <div class="info-item">⚡ <strong>Turnos:</strong> 1 hora y media (1:30 hs) | <strong>6 Canchas Disponibles</strong></div>
-        <div class="info-item">💰 <strong>Tarifas:</strong> Base $24.000 | Desde 17:00 hs o Fines de Semana $34.000 <span class="cash-promo">(Efectivo: $31.000)</span></div>
-        <div class="item-seña-aviso">⚠️ Se requiere seña obligatoria de <strong>$15.000</strong> para confirmar turno.</div>
+        <div class="info-item">⚡ <strong>Turnos:</strong> 1 hora y media (1:30 hs) | <strong>6 Canchas</strong></div>
+        <div class="info-item">💰 <strong>Tarifas:</strong> Base $24.000 | Finde/Pico $34.000 <span class="cash-promo">(Efectivo: $31.000)</span></div>
+        <div class="item-seña-aviso">⚠️ Seña obligatoria: <strong>$15.000</strong></div>
     </section>
 
     <!-- CONTENEDOR PRINCIPAL CLIENTES -->
@@ -95,9 +95,17 @@
                             <option value="Transferencia">Transferencia / Mercado Pago</option>
                         </select>
                     </div>
-                    <div class="form-group form-full">
-                        <label>Comprobante de Seña / Nro de Operación ($15.000 requeridos):</label>
-                        <input type="text" id="inputComprobante" placeholder="Ej: Transferencia CBU Nro 845920 o Subir captura/recibo" required>
+
+                    <!-- CAJA CON DATOS DE TRANSFERENCIA Y CARGA DE COMPROBANTE -->
+                    <div class="form-group form-full transfer-box-container">
+                        <label>Datos para la Seña ($15.000):</label>
+                        <div class="datos-alias-card">
+                            <p>🏦 <strong>Alias:</strong> <code>san.esteban.padel</code></p>
+                            <p>👤 <strong>Titular:</strong> San Esteban Paddle Club S.R.L.</p>
+                            <p>📊 <strong>CVU / CBU:</strong> 0000003100012345678990</p>
+                        </div>
+                        <label style="margin-top: 10px;">Subir o adjuntar Comprobante de Seña (Imagen o PDF):</label>
+                        <input type="file" id="inputComprobanteFile" accept="image/*,.pdf" required style="padding: 10px; background: #111827; border: 1px dashed var(--primary-color); border-radius: 8px; color: white; cursor: pointer;">
                     </div>
                 </div>
 

@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarSelectHorarios();
     obtenerReservasYActualizar();
     iniciarReloj();
-    cargarClimaSanJusto();
 
     document.getElementById('inputFecha').addEventListener('change', actualizarPrecioYDisponibilidad);
     document.getElementById('selectHorario').addEventListener('change', actualizarPrecioYDisponibilidad);
@@ -29,21 +28,6 @@ function iniciarReloj() {
         const ahora = new Date();
         document.getElementById('widgetReloj').textContent = ahora.toLocaleTimeString('es-AR');
     }, 1000);
-}
-
-// CORRECCIÓN CLIMA: Usamos ?format=3 para obtener texto plano limpio sin HTML
-async function cargarClimaSanJusto() {
-    const contenedorClima = document.getElementById('widgetClima');
-    try {
-        // Usamos la API de wttr.in solicitando formato de clima actual en texto plano
-        const res = await fetch('https://wttr.in/Buenos+Aires?format=%t+%C');
-        if (!res.ok) throw new Error('Error clima');
-        const clima = await res.text();
-        contenedorClima.textContent = clima.trim();
-    } catch (e) {
-        // Valor fijo por defecto si la red o la API externa bloquean la petición
-        contenedorClima.textContent = "🌤️ 22°C (San Justo)";
-    }
 }
 
 function cargarSelectHorarios() {
@@ -103,7 +87,17 @@ async function registrarReserva() {
     const cliente = document.getElementById('inputCliente').value;
     const telefono = document.getElementById('inputTelefono').value;
     const metodo_pago = document.getElementById('selectPago').value;
-    const comprobante = document.getElementById('inputComprobante').value;
+    const inputFile = document.getElementById('inputComprobanteFile').files[0];
+
+    // Convertir el archivo subido a Base64 para guardarlo en la base de datos y verlo en el admin
+    let comprobanteData = "Sin comprobante";
+    if (inputFile) {
+        comprobanteData = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(inputFile);
+        });
+    }
 
     const calculo = calcularPrecio(fecha, horario, metodo_pago);
 
@@ -116,7 +110,7 @@ async function registrarReserva() {
         telefono,
         precio: calculo.precio,
         metodo_pago,
-        comprobante
+        comprobante: comprobanteData
     };
 
     try {
