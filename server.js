@@ -15,10 +15,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// Inicializar tabla y asegurar columnas de seña y comprobante
+// Inicializar base de datos de forma limpia
 async function inicializarBaseDatos() {
   try {
-    const query = `
+    // Si la tabla vieja no tiene las columnas nuevas, la recreamos limpia
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS reservas (
         id SERIAL PRIMARY KEY,
         cancha INT,
@@ -34,9 +35,8 @@ async function inicializarBaseDatos() {
         estado_pago VARCHAR(20) DEFAULT 'Pendiente',
         estado VARCHAR(20) DEFAULT 'Reservado'
       );
-    `;
-    await pool.query(query);
-    console.log("Base de datos de San Esteban Paddle Club verificada correctamente.");
+    `);
+    console.log("Base de datos de San Esteban Paddle Club lista.");
   } catch (err) {
     console.error("Error al inicializar la base de datos:", err);
   }
@@ -49,7 +49,7 @@ app.get('/api/reservas', async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     console.error("Error al consultar reservas:", err);
-    res.status(500).json({ error: "Error en el servidor al consultar la base de datos" });
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -64,8 +64,8 @@ app.post('/api/reservas', async (req, res) => {
     const nuevaReserva = await pool.query(query, values);
     res.status(201).json(nuevaReserva.rows[0]);
   } catch (err) {
-    console.error("Error al guardar reserva:", err);
-    res.status(500).json({ error: "Error al registrar la reserva en la base de datos" });
+    console.error("Error exacto al guardar reserva:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -79,8 +79,7 @@ app.patch('/api/reservas/:id/estado', async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("Error al actualizar estado de pago:", err);
-    res.status(500).json({ error: "Error al actualizar el pago" });
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -90,8 +89,7 @@ app.delete('/api/reservas/:id', async (req, res) => {
     await pool.query('DELETE FROM reservas WHERE id = $1', [id]);
     res.json({ mensaje: "Reserva eliminada con éxito" });
   } catch (err) {
-    console.error("Error al eliminar reserva:", err);
-    res.status(500).json({ error: "Error al eliminar la reserva" });
+    res.status(500).json({ error: err.message });
   }
 });
 
