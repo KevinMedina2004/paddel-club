@@ -10,12 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const hoy = new Date().toISOString().split('T')[0];
     const inputFecha = document.getElementById('inputFecha');
     inputFecha.value = hoy;
-    inputFecha.min = hoy; // Evita totalmente elegir fechas anteriores
+    inputFecha.min = hoy;
 
     obtenerReservasYActualizar();
     iniciarReloj();
     cargarClimaOpenMeteo();
 
+    // Eventos de cambios para recalcular precio y disponibilidad
     inputFecha.addEventListener('change', () => {
         actualizarSelectHorarios();
         actualizarPrecioYDisponibilidad();
@@ -26,6 +27,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('selectHorario').addEventListener('change', actualizarPrecioYDisponibilidad);
     document.getElementById('selectPago').addEventListener('change', actualizarPrecioYDisponibilidad);
+    
+    // Mostrar u ocultar selector de cantidad de paletas
+    const selectPaletas = document.getElementById('selectPaletas');
+    const grupoCantidad = document.getElementById('grupoCantidadPaletas');
+    selectPaletas.addEventListener('change', () => {
+        if (selectPaletas.value === 'Si') {
+            grupoCantidad.style.display = 'flex';
+        } else {
+            grupoCantidad.style.display = 'none';
+        }
+        actualizarPrecioYDisponibilidad();
+    });
+
+    document.getElementById('selectCantidadPaletas').addEventListener('change', actualizarPrecioYDisponibilidad);
 
     document.getElementById('formReserva').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -54,10 +69,12 @@ async function cargarClimaOpenMeteo() {
     }
 }
 
+// VENTANA MODAL CON ANIMACIÓN
 function mostrarModal(titulo, mensaje) {
     document.getElementById('modalTitle').textContent = titulo;
     document.getElementById('modalMessage').textContent = mensaje;
-    document.getElementById('customModal').style.display = 'flex';
+    const modal = document.getElementById('customModal');
+    modal.style.display = 'flex';
 }
 
 function cerrarModalCustom() {
@@ -95,7 +112,7 @@ function actualizarSelectHorarios() {
 }
 
 function calcularPrecio(fechaStr, horarioStr, metodoPago) {
-    if (!fechaStr || !horarioStr) return { precio: 0, detalle: "Complete fecha y horario" };
+    if (!fechaStr || !horarioStr) return { precioCancha: 0, costoPaletas: 0, precioTotal: 0, detalle: "Complete fecha y horario" };
 
     const partesFecha = fechaStr.split('-');
     const fechaObj = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2]);
@@ -115,12 +132,29 @@ function calcularPrecio(fechaStr, horarioStr, metodoPago) {
 
     if (metodoPago === 'Efectivo' && precioBase === 34000) {
         precioBase = 31000;
-        detalle += " + Promo Efectivo con descuento";
+        detalle += " + Promo Efectivo";
     } else if (metodoPago === 'Efectivo') {
-        detalle += " (Efectivo con descuento)";
+        detalle += " (Efectivo)";
     }
 
-    return { precio: precioBase, detalle: `${detalle} | Seña obligatoria: $15.000` };
+    // Cálculo de paletas ($5.000 c/u)
+    let costoPaletas = 0;
+    let textoPaletas = "";
+    const necesitaPaletas = document.getElementById('selectPaletas').value;
+    if (necesitaPaletas === 'Si') {
+        const cant = parseInt(document.getElementById('selectCantidadPaletas').value) || 1;
+        costoPaletas = cant * 5000;
+        textoPaletas = ` | ${cant} paleta(s): +$${costoPaletas.toLocaleString('es-AR')}`;
+    }
+
+    const precioTotal = precioBase + costoPaletas;
+
+    return { 
+        precioCancha: precioBase, 
+        costoPaletas, 
+        precioTotal, 
+        detalle: `${detalle}${textoPaletas} | Seña obligatoria: $15.000` 
+    };
 }
 
 function actualizarPrecioYDisponibilidad() {
@@ -129,7 +163,7 @@ function actualizarPrecioYDisponibilidad() {
     const pago = document.getElementById('selectPago').value;
 
     const resultado = calcularPrecio(fecha, horario, pago);
-    document.getElementById('txtPrecio').textContent = `$${resultado.precio.toLocaleString('es-AR')}`;
+    document.getElementById('txtPrecio').textContent = `$${resultado.precioTotal.toLocaleString('es-AR')}`;
     document.getElementById('txtDetallePrecio').textContent = resultado.detalle;
 }
 
@@ -140,6 +174,8 @@ async function registrarReserva() {
     const cliente = document.getElementById('inputCliente').value;
     const telefono = document.getElementById('inputTelefono').value;
     const metodo_pago = document.getElementById('selectPago').value;
+    const necesitaPaletas = document.getElementById('selectPaletas').value;
+    const cantidadPaletas = necesitaPaletas === 'Si' ? parseInt(document.getElementById('selectCantidadPaletas').value) : 0;
     const inputFile = document.getElementById('inputComprobanteFile').files[0];
 
     let comprobanteData = "Sin comprobante";
@@ -160,8 +196,9 @@ async function registrarReserva() {
         fecha,
         cliente,
         telefono,
-        precio: calculo.precio,
+        precio: calculo.precioTotal,
         metodo_pago,
+        paletas: cantidadPaletas,
         comprobante: comprobanteData
     };
 
@@ -177,6 +214,7 @@ async function registrarReserva() {
             document.getElementById('formReserva').reset();
             const hoy = new Date().toISOString().split('T')[0];
             document.getElementById('inputFecha').value = hoy;
+            document.getElementById('grupoCantidadPaletas').style.display = 'none';
             await obtenerReservasYActualizar();
         } else {
             const errorData = await response.json();
@@ -221,7 +259,6 @@ function renderizarGrillaCanchas(reservas) {
     }
 }
 
-// CONSULTOR DE ESTADO DE RESERVA POR TELÉFONO CON COLORES DINÁMICOS EN EL BORDE
 function consultarEstadoReserva() {
     const telefonoBuscado = document.getElementById('inputBusquedaTel').value.trim();
     const contenedorResultado = document.getElementById('resultadoConsulta');
@@ -240,16 +277,18 @@ function consultarEstadoReserva() {
 
     let html = `<h4>Reservas encontradas para: ${telefonoBuscado}</h4>`;
     reservasCliente.forEach(r => {
-        let estadoColor = '#f59e0b'; // Amarillo por defecto (Pendiente)
+        let estadoColor = '#f59e0b';
         let textoEstado = r.estado_pago || 'Pendiente';
         
-        if (textoEstado === 'Aprobado') estadoColor = '#10b981'; // Verde
-        else if (textoEstado === 'Rechazado') estadoColor = '#ef4444'; // Rojo
+        if (textoEstado === 'Aprobado') estadoColor = '#10b981';
+        else if (textoEstado === 'Rechazado') estadoColor = '#ef4444';
+
+        let infoPaletas = r.paletas > 0 ? ` | 🎾 ${r.paletas} paleta(s)` : '';
 
         html += `
             <div class="reserva-encontrada-item" style="border-left: 4px solid ${estadoColor};">
                 <p><strong>Fecha:</strong> ${r.fecha} | <strong>Horario:</strong> ${r.horario} | <strong>Cancha:</strong> ${r.cancha}</p>
-                <p><strong>Cliente:</strong> ${r.cliente} | <strong>Total:</strong> $${Number(r.precio).toLocaleString('es-AR')}</p>
+                <p><strong>Cliente:</strong> ${r.cliente} | <strong>Total:</strong> $${Number(r.precio).toLocaleString('es-AR')}${infoPaletas}</p>
                 <p><strong>Estado de Seña:</strong> <span style="color: ${estadoColor}; font-weight: 700;">${textoEstado}</span></p>
             </div>
         `;

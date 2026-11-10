@@ -47,7 +47,7 @@
         <div class="info-item">🕒 <strong>Horarios:</strong> Lunes a Domingo de 08:00 a 00:00 hs</div>
         <div class="info-item">⚡ <strong>Turnos:</strong> 1 hora y media (1:30 hs) | <strong>6 Canchas</strong></div>
         <div class="info-item">💰 <strong>Tarifas:</strong> Base $24.000 | Finde/Pico $34.000 <span class="cash-promo">(Efectivo con descuento)</span></div>
-        <div class="item-seña-aviso">⚠️ Seña obligatoria: <strong>$15.000</strong></div>
+        <div class="item-seña-aviso">⚠️ Seña obligatoria: <strong>$15.000</strong> (+ Alquiler de paletas opcional $5.000 c/u)</div>
     </section>
 
     <!-- CONTENEDOR PRINCIPAL CLIENTES -->
@@ -56,13 +56,12 @@
         <!-- SECCIÓN DE RESERVAS -->
         <div class="panel-card">
             <h2>Reserva tu Cancha Online</h2>
-            <p class="subtitle">Selecciona fecha, horario, cancha y adjunta el comprobante de tu seña de $15.000.</p>
+            <p class="subtitle">Selecciona fecha, horario, cancha, alquiler de paletas y adjunta el comprobante de tu seña.</p>
             
             <form id="formReserva" class="reserva-form">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Fecha de la Reserva:</label>
-                        <!-- Bloqueamos fechas anteriores con min="hoy" -->
                         <input type="date" id="inputFecha" required>
                     </div>
                     <div class="form-group">
@@ -99,6 +98,25 @@
                         </select>
                     </div>
 
+                    <!-- APARTADO DE ALQUILER DE PALETAS -->
+                    <div class="form-group">
+                        <label>¿Necesitas alquilar paletas? ($5.000 c/u):</label>
+                        <select id="selectPaletas" required>
+                            <option value="No">No, tengo las mías</option>
+                            <option value="Si">Sí, necesito alquilar</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="grupoCantidadPaletas" style="display: none;">
+                        <label>Cantidad de Paletas:</label>
+                        <select id="selectCantidadPaletas">
+                            <option value="1">1 Paleta ($5.000)</option>
+                            <option value="2">2 Paletas ($10.000)</option>
+                            <option value="3">3 Paletas ($15.000)</option>
+                            <option value="4">4 Paletas ($20.000)</option>
+                        </select>
+                    </div>
+
                     <!-- TARJETA DE SEÑA DESTACADA -->
                     <div class="form-group form-full">
                         <div class="datos-seña-panel">
@@ -117,7 +135,7 @@
                         <input type="file" id="inputComprobanteFile" accept="image/*,.pdf" required class="file-input-custom">
                     </div>
 
-                    <!-- PRECIO CALCULADO UBICADO DEBAJO DE LA TRANSFERENCIA Y DATOS -->
+                    <!-- PRECIO CALCULADO -->
                     <div class="form-group form-full">
                         <div class="precio-box" id="cajaPrecio">
                             <span>Total a Abonar:</span>
@@ -150,7 +168,7 @@
         </div>
     </main>
 
-    <!-- VENTANA MODAL PERSONALIZADA (CSS) -->
+    <!-- VENTANA MODAL PERSONALIZADA CON ANIMACIÓN -->
     <div id="customModal" class="custom-modal-overlay" style="display: none;">
         <div class="custom-modal-card">
             <h3 id="modalTitle">Aviso del Club</h3>

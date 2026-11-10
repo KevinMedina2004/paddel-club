@@ -17,6 +17,7 @@ app.use(express.static(path.join(__dirname)));
 
 async function inicializarBaseDatos() {
   try {
+    // Si la tabla ya existe pero no tiene la columna paletas, la creamos o actualizamos de forma segura
     await pool.query(`
       CREATE TABLE IF NOT EXISTS reservas (
         id SERIAL PRIMARY KEY,
@@ -29,12 +30,19 @@ async function inicializarBaseDatos() {
         precio NUMERIC,
         metodo_pago VARCHAR(20),
         sena NUMERIC DEFAULT 15000,
+        paletas INT DEFAULT 0,
         comprobante TEXT,
         estado_pago VARCHAR(20) DEFAULT 'Pendiente',
         estado VARCHAR(20) DEFAULT 'Reservado'
       );
     `);
-    console.log("Base de datos de San Esteban Paddle Club lista y optimizada.");
+    
+    // Por si la tabla ya existía de antes sin la columna paletas, la añadimos si no existe
+    await pool.query(`
+      ALTER TABLE reservas ADD COLUMN IF NOT EXISTS paletas INT DEFAULT 0;
+    `);
+
+    console.log("Base de datos de San Esteban Paddle Club lista con soporte de paletas.");
   } catch (err) {
     console.error("Error al inicializar la base de datos:", err);
   }
@@ -52,13 +60,13 @@ app.get('/api/reservas', async (req, res) => {
 });
 
 app.post('/api/reservas', async (req, res) => {
-  const { cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago, comprobante } = req.body;
+  const { cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago, paletas, comprobante } = req.body;
   try {
     const query = `
-      INSERT INTO reservas (cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago, sena, comprobante, estado_pago)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 15000, $9, 'Pendiente') RETURNING *;
+      INSERT INTO reservas (cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago, sena, paletas, comprobante, estado_pago)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 15000, $9, $10, 'Pendiente') RETURNING *;
     `;
-    const values = [cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago, comprobante || 'Sin comprobante'];
+    const values = [cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago, paletas || 0, comprobante || 'Sin comprobante'];
     const nuevaReserva = await pool.query(query, values);
     res.status(201).json(nuevaReserva.rows[0]);
   } catch (err) {

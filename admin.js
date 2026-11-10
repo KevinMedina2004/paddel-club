@@ -8,9 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('loginModal').style.display = 'none';
             document.getElementById('panelAdminContent').style.display = 'block';
             
-            // Modal de bienvenida personalizado al ingresar al sistema de staff
             mostrarModal('¡Bienvenido al Staff!', 'Has ingresado correctamente al panel de control de San Esteban Paddle Club.');
-            
             cargarPanelAdmin();
         } else {
             document.getElementById('errorLogin').textContent = 'Usuario o contraseña incorrectos.';
@@ -71,13 +69,15 @@ async function cargarPanelAdmin() {
                 comprobanteHtml = `<span>${r.comprobante}</span>`;
             }
 
+            let detallePaletas = r.paletas > 0 ? `<br><small style="color:var(--accent-color);">🎾 ${r.paletas} paleta(s)</small>` : '';
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>#${r.id}</td>
                 <td>${r.fecha}<br><small style="color:#9ca3af;">${r.horario}</small></td>
                 <td>Cancha ${r.cancha}</td>
                 <td><strong>${r.cliente}</strong><br><small>${r.telefono}</small></td>
-                <td>${r.metodo_pago}<br><strong style="color:var(--accent-color);">$${Number(r.precio).toLocaleString('es-AR')}</strong></td>
+                <td>${r.metodo_pago}${detallePaletas}<br><strong style="color:var(--accent-color);">$${Number(r.precio).toLocaleString('es-AR')}</strong></td>
                 <td>${comprobanteHtml}</td>
                 <td><span style="color: ${badgeColor}; font-weight:700;">${r.estado_pago || 'Pendiente'}</span></td>
                 <td>
