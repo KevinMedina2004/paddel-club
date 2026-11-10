@@ -16,10 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
     iniciarReloj();
     cargarClimaOpenMeteo();
 
-    // Eventos de cambios para recalcular precio y disponibilidad
     inputFecha.addEventListener('change', () => {
         actualizarSelectHorarios();
         actualizarPrecioYDisponibilidad();
+        renderizarGrillaCanchas(listaGlobalReservas);
     });
     document.getElementById('selectCancha').addEventListener('change', () => {
         actualizarSelectHorarios();
@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('selectHorario').addEventListener('change', actualizarPrecioYDisponibilidad);
     document.getElementById('selectPago').addEventListener('change', actualizarPrecioYDisponibilidad);
     
-    // Mostrar u ocultar selector de cantidad de paletas
     const selectPaletas = document.getElementById('selectPaletas');
     const grupoCantidad = document.getElementById('grupoCantidadPaletas');
     selectPaletas.addEventListener('change', () => {
@@ -69,12 +68,10 @@ async function cargarClimaOpenMeteo() {
     }
 }
 
-// VENTANA MODAL CON ANIMACIÓN
 function mostrarModal(titulo, mensaje) {
     document.getElementById('modalTitle').textContent = titulo;
     document.getElementById('modalMessage').textContent = mensaje;
-    const modal = document.getElementById('customModal');
-    modal.style.display = 'flex';
+    document.getElementById('customModal').style.display = 'flex';
 }
 
 function cerrarModalCustom() {
@@ -137,7 +134,6 @@ function calcularPrecio(fechaStr, horarioStr, metodoPago) {
         detalle += " (Efectivo)";
     }
 
-    // Cálculo de paletas ($5.000 c/u)
     let costoPaletas = 0;
     let textoPaletas = "";
     const necesitaPaletas = document.getElementById('selectPaletas').value;
@@ -242,6 +238,19 @@ function renderizarGrillaCanchas(reservas) {
     contenedor.innerHTML = '';
     const fechaSeleccionada = document.getElementById('inputFecha').value;
 
+    let totalTurnosOcupadosDia = 0;
+    const totalTurnosPosiblesDia = 6 * HORARIOS_DISPONIBLES.length; 
+
+    for (let c = 1; c <= 6; c++) {
+        const reservasCancha = reservas.filter(r => r.cancha === c && r.fecha === fechaSeleccionada && r.estado_pago !== 'Rechazado');
+        totalTurnosOcupadosDia += reservasCancha.length;
+    }
+
+    const subtituloGrilla = document.getElementById('subtituloGrilla');
+    if (subtituloGrilla) {
+        subtituloGrilla.innerHTML = `Resumen para el <strong>${fechaSeleccionada}</strong>: <span style="color:var(--accent-color);">${totalTurnosOcupadosDia} turnos ocupados</span> sobre ${totalTurnosPosiblesDia} disponibles en total.`;
+    }
+
     for (let c = 1; c <= 6; c++) {
         const card = document.createElement('div');
         card.className = 'turno-card';
@@ -251,7 +260,7 @@ function renderizarGrillaCanchas(reservas) {
         if (reservasCancha.length === 0) {
             htmlContenido += `<p style="font-size:12px; color:#9ca3af;">Sin reservas hoy</p><span class="badge-estado badge-libre">Disponible</span>`;
         } else {
-            htmlContenido += `<p style="font-size:12px; color:#f59e0b;">${reservasCancha.length} turno(s) ocupados</p><span class="badge-estado badge-ocupado">Reservada</span>`;
+            htmlContenido += `<p style="font-size:12px; color:#f59e0b;">${reservasCancha.length} / ${HORARIOS_DISPONIBLES.length} turnos ocupados</p><span class="badge-estado badge-ocupado">Con actividad</span>`;
         }
 
         card.innerHTML = htmlContenido;
