@@ -47,10 +47,10 @@ async function cargarPanelAdmin() {
             if (r.estado_pago === 'Aprobado') badgeColor = '#10b981';
             if (r.estado_pago === 'Rechazado') badgeColor = '#ef4444';
 
-            // Botón o enlace para ver el comprobante en nueva pestaña
+            // CORRECCIÓN: Creamos un objeto URL temporal para abrir el PDF/Imagen Base64 correctamente en una pestaña nueva
             let comprobanteHtml = 'Sin comprobante';
             if (r.comprobante && r.comprobante.startsWith('data:')) {
-                comprobanteHtml = `<a href="${r.comprobante}" target="_blank" class="btn-ver-comprobante">Ver Comprobante 🔍</a>`;
+                comprobanteHtml = `<a href="#" onclick="abrirComprobanteBase64('${r.comprobante}'); return false;" class="btn-ver-comprobante">Ver Comprobante 🔍</a>`;
             } else if (r.comprobante) {
                 comprobanteHtml = `<span>${r.comprobante}</span>`;
             }
@@ -76,6 +76,27 @@ async function cargarPanelAdmin() {
         });
     } catch (error) {
         console.error('Error al cargar panel admin:', error);
+    }
+}
+
+// Función auxiliar para convertir el Base64 y abrirlo limpiamente como documento en otra pestaña
+function abrirComprobanteBase64(base64Data) {
+    try {
+        const arr = base64Data.split(',');
+        const mimeMatch = arr[0].match(/:(.*?);/);
+        const mime = mimeMatch ? mimeMatch[1] : 'application/pdf';
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        const blob = new Blob([u8arr], { type: mime });
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank');
+    } catch (e) {
+        console.error("Error al abrir comprobante:", e);
+        alert("No se pudo previsualizar el archivo adjunto.");
     }
 }
 
