@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Reloj en vivo
 function iniciarReloj() {
     setInterval(() => {
         const ahora = new Date();
@@ -32,10 +31,10 @@ function iniciarReloj() {
     }, 1000);
 }
 
-// Widget Clima San Justo (Usando API pública abierta wttr.in)
+// CORRECCIÓN CLIMA: Usamos ?format=3 para obtener texto plano limpio sin HTML
 async function cargarClimaSanJusto() {
     try {
-        const res = await fetch('https://wttr.in/San+Justo,Buenos+Aires?format=%t+%C');
+        const res = await fetch('https://wttr.in/San+Justo,Buenos+Aires?format=3');
         const clima = await res.text();
         document.getElementById('widgetClima').textContent = clima.trim();
     } catch (e) {
@@ -129,7 +128,8 @@ async function registrarReserva() {
             document.getElementById('inputFecha').value = fecha;
             obtenerReservasYActualizar();
         } else {
-            alert('Error al registrar la reserva.');
+            const errorData = await response.json();
+            alert('Error al registrar la reserva: ' + (errorData.error || 'Desconocido'));
         }
     } catch (error) {
         console.error('Error de red:', error);

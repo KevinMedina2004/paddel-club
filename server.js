@@ -6,18 +6,16 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configuración de la Base de Datos (Neon PostgreSQL)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
-// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// --- INICIALIZAR TABLA CON NUEVOS CAMPOS ---
+// Inicializar tabla y asegurar columnas de seña y comprobante
 async function inicializarBaseDatos() {
   try {
     const query = `
@@ -32,7 +30,7 @@ async function inicializarBaseDatos() {
         precio NUMERIC,
         metodo_pago VARCHAR(20),
         sena NUMERIC DEFAULT 15000,
-        comprobante VARCHAR(100),
+        comprobante VARCHAR(200),
         estado_pago VARCHAR(20) DEFAULT 'Pendiente',
         estado VARCHAR(20) DEFAULT 'Reservado'
       );
@@ -45,9 +43,6 @@ async function inicializarBaseDatos() {
 }
 inicializarBaseDatos();
 
-// --- RUTAS DE LA API ---
-
-// Obtener todas las reservas
 app.get('/api/reservas', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM reservas ORDER BY id DESC');
@@ -58,7 +53,6 @@ app.get('/api/reservas', async (req, res) => {
   }
 });
 
-// Crear una nueva reserva (Cliente)
 app.post('/api/reservas', async (req, res) => {
   const { cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago, comprobante } = req.body;
   try {
@@ -75,10 +69,9 @@ app.post('/api/reservas', async (req, res) => {
   }
 });
 
-// Aprobar o rechazar seña / pago (Panel Admin)
 app.patch('/api/reservas/:id/estado', async (req, res) => {
   const { id } = req.params;
-  const { estado_pago } = req.body; // 'Aprobado' o 'Rechazado'
+  const { estado_pago } = req.body;
   try {
     const result = await pool.query(
       'UPDATE reservas SET estado_pago = $1 WHERE id = $2 RETURNING *;',
@@ -91,7 +84,6 @@ app.patch('/api/reservas/:id/estado', async (req, res) => {
   }
 });
 
-// Eliminar / Cancelar reserva
 app.delete('/api/reservas/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -103,7 +95,6 @@ app.delete('/api/reservas/:id', async (req, res) => {
   }
 });
 
-// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`San Esteban Paddle Club corriendo en http://localhost:${PORT}`);
 });
