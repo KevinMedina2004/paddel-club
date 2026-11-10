@@ -15,12 +15,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// Inicializar base de datos de forma limpia
+// Inicializar base de datos recreando la tabla de forma limpia para evitar conflictos
 async function inicializarBaseDatos() {
   try {
-    // Si la tabla vieja no tiene las columnas nuevas, la recreamos limpia
+    // NOTA: Borramos y recreamos para asegurar que todas las columnas (sena, comprobante, etc.) existan
+    await pool.query(`DROP TABLE IF EXISTS reservas CASCADE;`);
+    
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS reservas (
+      CREATE TABLE reservas (
         id SERIAL PRIMARY KEY,
         cancha INT,
         horario VARCHAR(20),
@@ -36,7 +38,7 @@ async function inicializarBaseDatos() {
         estado VARCHAR(20) DEFAULT 'Reservado'
       );
     `);
-    console.log("Base de datos de San Esteban Paddle Club lista.");
+    console.log("Base de datos de San Esteban Paddle Club recreada y lista.");
   } catch (err) {
     console.error("Error al inicializar la base de datos:", err);
   }
@@ -75,7 +77,7 @@ app.patch('/api/reservas/:id/estado', async (req, res) => {
   try {
     const result = await pool.query(
       'UPDATE reservas SET estado_pago = $1 WHERE id = $2 RETURNING *;',
-      [estado_pago, id]
+      [estado_pargo, id]
     );
     res.json(result.rows[0]);
   } catch (err) {

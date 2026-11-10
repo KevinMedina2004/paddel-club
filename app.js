@@ -35,13 +35,13 @@ function iniciarReloj() {
 async function cargarClimaSanJusto() {
     const contenedorClima = document.getElementById('widgetClima');
     try {
-        // Usamos una API alternativa limpia (wttr.in en formato de una sola línea)
-        const res = await fetch('https://wttr.in/Buenos+Aires?format=1');
-        if (!res.ok) throw new Error('Error al obtener clima');
+        // Usamos la API de wttr.in solicitando formato de clima actual en texto plano
+        const res = await fetch('https://wttr.in/Buenos+Aires?format=%t+%C');
+        if (!res.ok) throw new Error('Error clima');
         const clima = await res.text();
         contenedorClima.textContent = clima.trim();
     } catch (e) {
-        // Si falla por CORS o red, ponemos un clima estable por defecto de la zona
+        // Valor fijo por defecto si la red o la API externa bloquean la petición
         contenedorClima.textContent = "🌤️ 22°C (San Justo)";
     }
 }
