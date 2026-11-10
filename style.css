@@ -1,8 +1,8 @@
 :root {
-    --primary-color: #10b981; /* Verde césped / pádel */
+    --primary-color: #10b981;
     --primary-dark: #059669;
-    --accent-color: #f59e0b; /* Amarillo pelota de tenis/pádel */
-    --dark-bg: #111827;
+    --accent-color: #f59e0b;
+    --dark-bg: #0b0f19;
     --card-bg: #1f2937;
     --text-light: #f3f4f6;
     --text-muted: #9ca3af;
@@ -11,17 +11,17 @@
 
 body {
     font-family: 'Montserrat', sans-serif;
-    background-color: #0b0f19;
+    background-color: var(--dark-bg);
     color: var(--text-light);
     margin: 0;
     padding: 0;
 }
 
-/* HEADER */
+/* HEADER CON LOGO */
 .club-header {
     background: linear-gradient(135deg, #111827, #1f2937);
     border-bottom: 3px solid var(--primary-color);
-    padding: 20px 40px;
+    padding: 15px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -29,64 +29,101 @@ body {
     gap: 15px;
 }
 
-.logo-area h1 {
+.logo-title-area {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.club-logo {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-color);
+}
+
+.logo-title-area h1 {
     margin: 0;
     color: var(--primary-color);
     font-weight: 800;
-    font-size: 26px;
+    font-size: 24px;
     letter-spacing: 1px;
 }
 
-.logo-area p {
-    margin: 5px 0 0 0;
+.logo-title-area p {
+    margin: 3px 0 0 0;
     color: var(--text-muted);
     font-size: 13px;
 }
 
-.nav-tabs {
-    display: flex;
-    gap: 10px;
-}
-
-.tab-btn {
+.btn-admin-link {
     background: #374151;
     color: white;
-    border: none;
-    padding: 10px 20px;
+    text-decoration: none;
+    padding: 10px 18px;
     border-radius: 8px;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    font-size: 13px;
+    border: 1px dashed var(--accent-color);
+    transition: background 0.3s;
 }
 
-.tab-btn:hover {
+.btn-admin-link:hover {
     background: #4b5563;
 }
 
-.tab-btn.active {
-    background: var(--primary-color);
-    color: #0b0f19;
+/* WIDGETS BAR */
+.widgets-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    padding: 20px 40px;
+    background: #111827;
+    border-bottom: 1px solid #374151;
 }
 
-.staff-tab {
-    border: 1px dashed var(--accent-color);
+.widget-card {
+    background: var(--card-bg);
+    border: 1px solid #374151;
+    padding: 12px 18px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.widget-card span {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.widget-card strong {
+    font-size: 14px;
+    color: var(--accent-color);
 }
 
 /* INFO BAR */
 .info-bar {
     background: #1f2937;
-    border-bottom: 1px solid #374151;
     padding: 12px 40px;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
     gap: 15px;
-    font-size: 14px;
+    font-size: 13px;
+    border-bottom: 1px solid #374151;
     text-align: center;
 }
 
 .cash-promo {
     color: var(--accent-color);
+    font-weight: 700;
+}
+
+.item-seña-aviso {
+    color: var(--danger);
     font-weight: 700;
 }
 
@@ -97,15 +134,6 @@ body {
     padding: 0 20px;
 }
 
-.vista-section {
-    display: none;
-}
-
-.vista-section.active {
-    display: block;
-}
-
-/* CARDS */
 .panel-card {
     background: var(--card-bg);
     border-radius: 12px;
@@ -142,6 +170,10 @@ body {
     gap: 8px;
 }
 
+.form-full {
+    grid-column: 1 / -1;
+}
+
 .form-group label {
     font-size: 13px;
     font-weight: 600;
@@ -156,7 +188,6 @@ body {
     border-radius: 8px;
     font-size: 15px;
     outline: none;
-    transition: border-color 0.2s;
 }
 
 .form-group input:focus, .form-group select:focus {
@@ -173,20 +204,10 @@ body {
     margin: 25px 0;
 }
 
-.precio-box span {
-    color: var(--text-muted);
-    font-size: 14px;
-}
-
 .precio-box h3 {
     margin: 5px 0;
-    font-size: 32px;
+    font-size: 30px;
     color: var(--accent-color);
-}
-
-.precio-box small {
-    color: var(--text-muted);
-    font-size: 12px;
 }
 
 .btn-primary {
@@ -207,7 +228,7 @@ body {
     color: white;
 }
 
-/* GRILLA DE TURNOS */
+/* GRILLA */
 .grilla-turnos {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -223,11 +244,6 @@ body {
     text-align: center;
 }
 
-.turno-card h4 {
-    margin: 0 0 10px 0;
-    color: var(--accent-color);
-}
-
 .badge-estado {
     display: inline-block;
     padding: 4px 10px;
@@ -237,17 +253,33 @@ body {
     margin-top: 8px;
 }
 
-.badge-libre {
-    background: rgba(16, 185, 129, 0.2);
-    color: var(--primary-color);
+.badge-libre { background: rgba(16, 185, 129, 0.2); color: var(--primary-color); }
+.badge-ocupado { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+/* LOGIN ADMIN MODAL */
+.login-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(11, 15, 25, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.badge-ocupado {
-    background: rgba(239, 68, 68, 0.2);
-    color: var(--danger);
+.login-card {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #374151;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 
-/* PANEL STAFF TABLA Y STATS */
+.error-text { color: var(--danger); font-size: 13px; text-align: center; margin-top: 10px; }
+
+/* TABLA STAFF */
 .staff-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -263,22 +295,7 @@ body {
     text-align: center;
 }
 
-.stat-box h4 {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 13px;
-}
-
-.stat-box p {
-    margin: 10px 0 0 0;
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--accent-color);
-}
-
-.table-responsive {
-    overflow-x: auto;
-}
+.stat-box p { margin: 10px 0 0 0; font-size: 24px; font-weight: 700; color: var(--accent-color); }
 
 .staff-table {
     width: 100%;
@@ -292,26 +309,11 @@ body {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #374151;
-    font-size: 14px;
+    font-size: 13px;
 }
 
-.staff-table th {
-    background: #374151;
-    color: var(--text-light);
-    font-weight: 600;
-}
+.staff-table th { background: #374151; color: white; }
 
-.btn-delete {
-    background: var(--danger);
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.btn-delete:hover {
-    opacity: 0.8;
-}
+.btn-aprobar { background: var(--primary-color); color: #0b0f19; border: none; padding: 6px 10px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 11px; }
+.btn-rechazar { background: var(--accent-color); color: #0b0f19; border: none; padding: 6px 10px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 11px; }
+.btn-delete { background: var(--danger); color: white; border: none; padding: 6px 10px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 11px; }

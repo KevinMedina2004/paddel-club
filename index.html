@@ -3,143 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Padel Club 🎾 - Gestión de Canchas</title>
+    <title>San Esteban Paddle Club 🎾</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts para un estilo deportivo moderno -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- HEADER / NAVEGACIÓN -->
+    <!-- HEADER CON LOGO Y TÍTULO -->
     <header class="club-header">
-        <div class="logo-area">
-            <h1>🎾 MASTER PADEL CLUB</h1>
-            <p>¡Viví la pasión del 20×10 al máximo nivel!</p>
+        <div class="logo-title-area">
+            <img src="logo.png" alt="San Esteban Logo" class="club-logo">
+            <div>
+                <h1>SAN ESTEBAN PADDLE CLUB</h1>
+                <p>¡Viví la pasión del 20×10 al máximo nivel en San Justo!</p>
+            </div>
         </div>
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="cambiarVista('clientes')">👥 Panel Clientes (Reservas)</button>
-            <button class="tab-btn staff-tab" onclick="cambiarVista('staff')">🔒 Panel Staff</button>
+        <div class="admin-link-area">
+            <a href="admin.html" class="btn-admin-link">🔒 Acceso Staff</a>
         </div>
     </header>
 
-    <!-- INFO / HORARIOS DEL CLUB -->
-    <section class="info-bar">
-        <div class="info-item">🕒 <strong>Horarios del Club:</strong> Lunes a Domingo de 08:00 a 00:00 hs</div>
-        <div class="info-item">⚡ <strong>Turnos de:</strong> 1 hora y media (1:30 hs)</div>
-        <div class="info-item">💰 <strong>Tarifas:</strong> Base $24.000 | Desde 17:00 hs o Fines de Semana $34.000 <span class="cash-promo">(Efectivo: $31.000)</span></div>
+    <!-- WIDGETS INFORMATIVOS (Ubicación, Contacto, Hora y Clima) -->
+    <section class="widgets-bar">
+        <div class="widget-card">
+            <span>📍 Ubicación</span>
+            <strong>Centenera 1975, San Justo</strong>
+        </div>
+        <div class="widget-card">
+            <span>📞 Contacto / WhatsApp</span>
+            <strong>11-2807-1942</strong>
+        </div>
+        <div class="widget-card">
+            <span>🕒 Hora Actual</span>
+            <strong id="widgetReloj">--:--:--</strong>
+        </div>
+        <div class="widget-card">
+            <span>⛅ Clima San Justo</span>
+            <strong id="widgetClima">Cargando clima...</strong>
+        </div>
     </section>
 
-    <!-- CONTENEDOR PRINCIPAL -->
+    <!-- INFO / HORARIOS DEL CLUB -->
+    <section class="info-bar">
+        <div class="info-item">🕒 <strong>Horarios:</strong> Lunes a Domingo de 08:00 a 00:00 hs</div>
+        <div class="info-item">⚡ <strong>Turnos:</strong> 1 hora y media (1:30 hs) | <strong>6 Canchas Disponibles</strong></div>
+        <div class="info-item">💰 <strong>Tarifas:</strong> Base $24.000 | Desde 17:00 hs o Fines de Semana $34.000 <span class="cash-promo">(Efectivo: $31.000)</span></div>
+        <div class="item-seña-aviso">⚠️ Se requiere seña obligatoria de <strong>$15.000</strong> para confirmar turno.</div>
+    </section>
+
+    <!-- CONTENEDOR PRINCIPAL CLIENTES -->
     <main class="main-container">
-
-        <!-- ================= PANEL CLIENTES ================= -->
-        <div id="vista-clientes" class="vista-section active">
-            <div class="panel-card">
-                <h2>Reserva tu Cancha Online</h2>
-                <p class="subtitle">Selecciona la fecha, horario y una de nuestras 6 canchas profesionales de blindex.</p>
-                
-                <form id="formReserva" class="reserva-form">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Fecha de la Reserva:</label>
-                            <input type="date" id="inputFecha" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Cancha Disponible (1 a 6):</label>
-                            <select id="selectCancha" required>
-                                <option value="">Seleccione una cancha...</option>
-                                <option value="1">Cancha 1 (Blindex - Panorámica)</option>
-                                <option value="2">Cancha 2 (Blindex - Central)</option>
-                                <option value="3">Cancha 3 (Blindex - Techada)</option>
-                                <option value="4">Cancha 4 (Blindex - Profesional)</option>
-                                <option value="5">Cancha 5 (Blindex - Outdoor)</option>
-                                <option value="6">Cancha 6 (Blindex - Master)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Horario (Turnos 1:30 hs):</label>
-                            <select id="selectHorario" required>
-                                <option value="">Primero elije fecha y cancha...</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Nombre y Apellido:</label>
-                            <input type="text" id="inputCliente" placeholder="Ej: Lionel Messi" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Teléfono / WhatsApp:</label>
-                            <input type="tel" id="inputTelefono" placeholder="Ej: 1122334455" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Método de Pago:</label>
-                            <select id="selectPago" required>
-                                <option value="Efectivo">Efectivo (¡Precio Promocional! $31.000)</option>
-                                <option value="Transferencia">Transferencia / Mercado Pago (Tarifa normal)</option>
-                            </select>
-                        </div>
+        <div class="panel-card">
+            <h2>Reserva tu Cancha Online</h2>
+            <p class="subtitle">Selecciona fecha, horario, cancha y adjunta el comprobante de tu seña de $15.000.</p>
+            
+            <form id="formReserva" class="reserva-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Fecha de la Reserva:</label>
+                        <input type="date" id="inputFecha" required>
                     </div>
-
-                    <!-- CAJA DE PRECIO CALCULADO -->
-                    <div class="precio-box" id="cajaPrecio">
-                        <span>Total a Abonar:</span>
-                        <h3 id="txtPrecio">$0</h3>
-                        <small id="txtDetallePrecio">Selecciona horario y método de pago</small>
+                    <div class="form-group">
+                        <label>Cancha Disponible (1 a 6):</label>
+                        <select id="selectCancha" required>
+                            <option value="">Seleccione una cancha...</option>
+                            <option value="1">Cancha 1 (Blindex)</option>
+                            <option value="2">Cancha 2 (Blindex)</option>
+                            <option value="3">Cancha 3 (Blindex)</option>
+                            <option value="4">Cancha 4 (Blindex)</option>
+                            <option value="5">Cancha 5 (Blindex)</option>
+                            <option value="6">Cancha 6 (Blindex)</option>
+                        </select>
                     </div>
-
-                    <button type="submit" class="btn-primary">Confirmar Reserva 🎾</button>
-                </form>
-            </div>
-
-            <!-- GRILLA DE ESTADO DE CANCHAS -->
-            <div class="panel-card mt-20">
-                <h3>Estado Actual de Canchas y Turnos</h3>
-                <div id="grillaTurnos" class="grilla-turnos">
-                    <!-- Se carga dinámicamente con JS -->
+                    <div class="form-group">
+                        <label>Horario (Turnos 1:30 hs):</label>
+                        <select id="selectHorario" required>
+                            <option value="">Primero elije fecha y cancha...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre y Apellido:</label>
+                        <input type="text" id="inputCliente" placeholder="Ej: Lionel Messi" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono / WhatsApp:</label>
+                        <input type="tel" id="inputTelefono" placeholder="Ej: 1128071942" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Método de Pago:</label>
+                        <select id="selectPago" required>
+                            <option value="Efectivo">Efectivo ($31.000 total)</option>
+                            <option value="Transferencia">Transferencia / Mercado Pago</option>
+                        </select>
+                    </div>
+                    <div class="form-group form-full">
+                        <label>Comprobante de Seña / Nro de Operación ($15.000 requeridos):</label>
+                        <input type="text" id="inputComprobante" placeholder="Ej: Transferencia CBU Nro 845920 o Subir captura/recibo" required>
+                    </div>
                 </div>
-            </div>
+
+                <!-- CAJA DE PRECIO CALCULADO -->
+                <div class="precio-box" id="cajaPrecio">
+                    <span>Total a Abonar:</span>
+                    <h3 id="txtPrecio">$0</h3>
+                    <small id="txtDetallePrecio">Seña requerida: $15.000 (Saldo restante se paga en el club)</small>
+                </div>
+
+                <button type="submit" class="btn-primary">Confirmar Reserva y Enviar Seña 🎾</button>
+            </form>
         </div>
 
-        <!-- ================= PANEL STAFF ================= -->
-        <div id="vista-staff" class="vista-section">
-            <div class="panel-card staff-card">
-                <h2>Panel de Control - Staff & Caja</h2>
-                <p class="subtitle">Administración general de turnos agendados, control de caja y cancelaciones.</p>
-                
-                <div class="staff-stats">
-                    <div class="stat-box">
-                        <h4>Total Reservas</h4>
-                        <p id="statTotal">0</p>
-                    </div>
-                    <div class="stat-box">
-                        <h4>Recaudación Estimada</h4>
-                        <p id="statCaja">$0</p>
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="staff-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Fecha</th>
-                                <th>Cancha</th>
-                                <th>Horario</th>
-                                <th>Cliente</th>
-                                <th>Teléfono</th>
-                                <th>Pago</th>
-                                <th>Precio</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaStaffBody">
-                            <tr>
-                                <td colspan="9" style="text-align: center;">Cargando turnos...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <!-- GRILLA DE ESTADO DE CANCHAS -->
+        <div class="panel-card mt-20">
+            <h3>Estado Actual de Canchas (San Esteban)</h3>
+            <div id="grillaTurnos" class="grilla-turnos"></div>
         </div>
-
     </main>
 
     <script src="app.js"></script>

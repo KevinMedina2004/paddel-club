@@ -17,12 +17,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// --- RUTAS DE LA API ---
-
-// Obtener todas las reservas de la base de datos
-app.get('/api/reservas', async (req, res) => {
+// --- INICIALIZAR TABLA CON NUEVOS CAMPOS ---
+async function inicializarBaseDatos() {
   try {
-    // Si la tabla no existe aún, evitamos que crashee devolviendo un arreglo vacío
     const query = `
       CREATE TABLE IF NOT EXISTS reservas (
         id SERIAL PRIMARY KEY,
@@ -34,11 +31,25 @@ app.get('/api/reservas', async (req, res) => {
         telefono VARCHAR(50),
         precio NUMERIC,
         metodo_pago VARCHAR(20),
+        sena NUMERIC DEFAULT 15000,
+        comprobante VARCHAR(100),
+        estado_pago VARCHAR(20) DEFAULT 'Pendiente',
         estado VARCHAR(20) DEFAULT 'Reservado'
       );
     `;
     await pool.query(query);
+    console.log("Base de datos de San Esteban Paddle Club verificada correctamente.");
+  } catch (err) {
+    console.error("Error al inicializar la base de datos:", err);
+  }
+}
+inicializarBaseDatos();
 
+// --- RUTAS DE LA API ---
+
+// Obtener todas las reservas
+app.get('/api/reservas', async (req, res) => {
+  try {
     const result = await pool.query('SELECT * FROM reservas ORDER BY id DESC');
     res.json(result.rows);
   } catch (err) {
@@ -47,15 +58,15 @@ app.get('/api/reservas', async (req, res) => {
   }
 });
 
-// Crear una nueva reserva
+// Crear una nueva reserva (Cliente)
 app.post('/api/reservas', async (req, res) => {
-  const { cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago } = req.body;
+  const { cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago, comprobante } = req.body;
   try {
     const query = `
-      INSERT INTO reservas (cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;
+      INSERT INTO reservas (cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago, sena, comprobante, estado_pago)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 15000, $9, 'Pendiente') RETURNING *;
     `;
-    const values = [cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago];
+    const values = [cancha, horario, dia, fecha, cliente, telefono, precio, metodo_pago, comprobante || 'Sin comprobante'];
     const nuevaReserva = await pool.query(query, values);
     res.status(201).json(nuevaReserva.rows[0]);
   } catch (err) {
@@ -64,7 +75,23 @@ app.post('/api/reservas', async (req, res) => {
   }
 });
 
-// Eliminar / Cancelar reserva (Panel Staff)
+// Aprobar o rechazar seña / pago (Panel Admin)
+app.patch('/api/reservas/:id/estado', async (req, res) => {
+  const { id } = req.params;
+  const { estado_pago } = req.body; // 'Aprobado' o 'Rechazado'
+  try {
+    const result = await pool.query(
+      'UPDATE reservas SET estado_pago = $1 WHERE id = $2 RETURNING *;',
+      [estado_pago, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error al actualizar estado de pago:", err);
+    res.status(500).json({ error: "Error al actualizar el pago" });
+  }
+});
+
+// Eliminar / Cancelar reserva
 app.delete('/api/reservas/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -78,5 +105,5 @@ app.delete('/api/reservas/:id', async (req, res) => {
 
 // Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`Servidor de Paddel Club corriendo en http://localhost:${PORT}`);
+  console.log(`San Esteban Paddle Club corriendo en http://localhost:${PORT}`);
 });

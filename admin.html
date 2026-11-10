@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - San Esteban Paddle Club</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+    <!-- LOGIN OVERLAY -->
+    <div id="loginModal" class="login-overlay">
+        <div class="login-card">
+            <h2>🔒 Acceso Staff</h2>
+            <p>San Esteban Paddle Club - Administración</p>
+            <form id="formLogin">
+                <div class="form-group">
+                    <label>Usuario:</label>
+                    <input type="text" id="userAdmin" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <input type="password" id="passAdmin" placeholder="••••••" required>
+                </div>
+                <button type="submit" class="btn-primary">Ingresar al Sistema</button>
+                <p id="errorLogin" class="error-text"></p>
+            </form>
+            <div style="margin-top: 15px; text-align: center;">
+                <a href="index.html" style="color: #9ca3af; font-size: 13px;">← Volver a la página principal</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL DE ADMINISTRACIÓN (Oculto hasta iniciar sesión) -->
+    <div id="panelAdminContent" style="display: none;">
+        <header class="club-header">
+            <div class="logo-title-area">
+                <img src="logo.png" alt="Logo" class="club-logo">
+                <div>
+                    <h1>PANEL DE CONTROL - STAFF</h1>
+                    <p>San Esteban Paddle Club | Control de Señas y Caja</p>
+                </div>
+            </div>
+            <div>
+                <a href="index.html" class="btn-admin-link" style="background:#ef4444; border:none;">Cerrar Sesión</a>
+            </div>
+        </header>
+
+        <main class="main-container">
+            <div class="panel-card staff-card">
+                <h2>Gestión de Turnos y Comprobantes de Seña</h2>
+                <p class="subtitle">Revisa los comprobantes de seña ($15.000), aprueba los pagos o cancela turnos.</p>
+                
+                <div class="staff-stats">
+                    <div class="stat-box">
+                        <h4>Total Reservas</h4>
+                        <p id="statTotal">0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Señas Acumuladas</h4>
+                        <p id="statSenas">$0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Recaudación Estimada Total</h4>
+                        <p id="statCaja">$0</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="staff-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha / Horario</th>
+                                <th>Cancha</th>
+                                <th>Cliente / Tel</th>
+                                <th>Pago / Seña</th>
+                                <th>Comprobante</th>
+                                <th>Estado Seña</th>
+                                <th>Acciones Admin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaStaffBody">
+                            <tr><td colspan="8" style="text-align: center;">Cargando turnos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
