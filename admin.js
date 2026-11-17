@@ -1,3 +1,11 @@
+let eventoInstalacionPWA = null;
+
+// Capturamos el evento nativo de instalación cuando el navegador lo habilita
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    eventoInstalacionPWA = e;
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('formLogin').addEventListener('submit', (e) => {
         e.preventDefault();
@@ -14,6 +22,36 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('errorLogin').textContent = 'Usuario o contraseña incorrectos.';
         }
     });
+
+    // Acción del botón "Instalar App Staff"
+    const btnInstalar = document.getElementById('btnInstalarAppStaff');
+    if (btnInstalar) {
+        btnInstalar.addEventListener('click', async () => {
+            if (eventoInstalacionPWA) {
+                // Dispara la ventana nativa de instalación en Android / Chrome / PC
+                eventoInstalacionPWA.prompt();
+                const { outcome } = await eventoInstalacionPWA.userChoice;
+                if (outcome === 'accepted') {
+                    mostrarModal('¡App Instalada!', 'El Panel de Staff de San Esteban ya se agregó a tu pantalla de inicio.');
+                }
+                eventoInstalacionPWA = null;
+            } else {
+                // Instrucción clara para iPhone (Safari) o si ya está instalada
+                const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                if (esIOS) {
+                    mostrarModal(
+                        'Instalar en iPhone / iPad',
+                        'Toca el ícono de "Compartir" (cuadrado con flecha hacia arriba abajo en Safari) y selecciona "Agregar a inicio".'
+                    );
+                } else {
+                    mostrarModal(
+                        'Instalación de App',
+                        'Si ya instalaste la app, búscala en tu menú de aplicaciones. De lo contrario, abre el menú de tu navegador (⋮) y toca "Instalar aplicación" o "Agregar a pantalla principal".'
+                    );
+                }
+            }
+        });
+    }
 });
 
 function mostrarModal(titulo, mensaje) {

@@ -6,6 +6,14 @@
     <title>Admin - San Esteban Paddle Club</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Configuración PWA (App Independiente para el Staff) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Staff San Esteban">
+    <link rel="apple-touch-icon" href="logo.png">
 </head>
 <body class="admin-body">
 
@@ -42,7 +50,11 @@
                     <p>San Esteban Paddle Club | Control de Señas y Caja</p>
                 </div>
             </div>
-            <div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <!-- BOTÓN EXCLUSIVO PARA INSTALAR LA APP EN EL CELULAR DEL STAFF -->
+                <button type="button" id="btnInstalarAppStaff" class="btn-admin-link" style="cursor: pointer; border-color: var(--primary-color); color: var(--primary-color);">
+                    📲 Instalar App Staff
+                </button>
                 <a href="index.html" class="btn-admin-link btn-staff-logout">Cerrar Sesión</a>
             </div>
         </header>
@@ -101,5 +113,14 @@
     </div>
 
     <script src="admin.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('SW Staff registrado:', reg.scope))
+                    .catch(err => console.error('Error SW:', err));
+            });
+        }
+    </script>
 </body>
 </html>
